@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                                             String          @id @default(uuid())
+  email                                          String          @unique
+  password                                       String
+  name                                           String
+  role                                           UserRole        @default(FARMER)
+  phone                                          String?
+  address                                        String?
+  city                                           String?
+  state                                          String?
+  pincode                                        String?
+  rating                                         Float?          @default(0)
+  totalRatings                                   Int             @default(0)
+  createdAt                                      DateTime        @default(now())
+  updatedAt                                      DateTime        @updatedAt
+  buyerContracts                                 Contract[]      @relation("BuyerContracts")
+  farmerContracts                                Contract[]      @relation("FarmerContracts")
+  notifications_notifications_recipientIdTousers notifications[] @relation("notifications_recipientIdTousers")
+  notifications_notifications_senderIdTousers    notifications[] @relation("notifications_senderIdTousers")
+  transactions                                   Transaction[]
+  ratingsGiven                                   FarmerRating[]  @relation("RatingsGiven")
+  ratingsReceived                                FarmerRating[]  @relation("RatingsReceived")
+
+  @@map("users")
+}
+
+model Product {
+  id          String          @id @default(uuid())
+  name        String
+  category    ProductCategory
+  description String?
+  unit        String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  contracts   Contract[]
+  prices      MarketPrice[]
+
+  @@map("products")
+}
+
+model Contract {
+  id            String          @id @default(uuid())
+  farmerId      String
+  buyerId       String
+  productId     String
+  quantity      Float
+  unit          String
+  pricePerUnit  Float
+  totalValue    Float
+  startDate     DateTime
+  deliveryDate  DateTime
+  status        ContractStatus  @default(DRAFT)
+  terms         String?
+  location      String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  buyer         User            @relation("BuyerContracts", fields: [buyerId], references: [id])
+  farmer        User            @relation("FarmerContracts", fields: [farmerId], references: [id])
+  product       Product         @relation(fields: [productId], references: [id])
+  notifications notifications[]
+  transactions  Transaction[]
+
+  @@index([farmerId])
+  @@index([buyerId])
+  @@index([status])
+  @@map("contracts")
+}
+
+model MarketPrice {
+  id        String   @id @default(uuid())
+  productId String
+  price     Float
+  unit      String
+  location  String?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+  @@index([date])
+  @@map("market_prices")
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  contractId      String
+  userId          String
+  amount          Float
+  status          TransactionStatus @default(PENDING)
+  paymentMethod   String?
+  transactionDate DateTime          @default(now())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  paymentType     PaymentType?
+  contract        Contract          @relation(fields: [contractId], references: [id])
+  user            User              @relation(fields: [userId], references: [id])
+
+  @@index([contractId])
+  @@index([userId])
+  @@index([status])
+  @@map("transactions")
+}
+
+model notifications {
+  id                                     String             @id
+  type                                   NotificationType
+  title                                  String
+  message                                String
+  status                                 NotificationStatus @default(UNREAD)
+  recipientId                            String
+  senderId                               String?
+  contractId                             String?
+  metadata                               String?
+  readAt                                 DateTime?
+  createdAt                              DateTime           @default(now())
+  updatedAt                              DateTime
+  contracts                              Contract?          @relation(fields: [contractId], references: [id])
+  users_notifications_recipientIdTousers User               @relation("notifications_recipientIdTousers", fields: [recipientId], references: [id])
+  users_notifications_senderIdTousers    User?              @relation("notifications_senderIdTousers", fields: [senderId], references: [id])
+
+  @@index([createdAt])
+  @@index([recipientId])
+  @@index([status])
+}
+
+model FarmerRating {
+  id          String   @id @default(uuid())
+  farmerId    String
+  raterId     String
+  rating      Int      // 1-5 stars
+  comment     String?
+  contractId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  farmer      User     @relation("RatingsReceived", fields: [farmerId], references: [id])
+  rater       User     @relation("RatingsGiven", fields: [raterId], references: [id])
+  contract    Contract? @relation(fields: [contractId], references: [id])
+
+  @@index([farmerId])
+  @@index([raterId])
+  @@index([createdAt])
+  @@map("farmer_ratings")
+}
+
+enum UserRole {
+  FARMER
+  BUYER
+  ADMIN
+}
+
+enum ContractStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentType {
+  ADVANCE
+  PARTIAL
+  FINAL
+  REFUND
+  OTHER
+}
+
+enum ProductCategory {
+  GRAINS
+  VEGETABLES
+  FRUITS
+  SPICES
+  PULSES
+  OTHERS
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+enum NotificationType {
+  CONTRACT_CREATED
+  CONTRACT_UPDATED
+  CONTRACT_STATUS_CHANGED
+  PAYMENT_RECEIVED
+  PAYMENT_COMPLETED
+  DELIVERY_DUE
+  CONTRACT_COMPLETED
+  SYSTEM_ALERT
+  FARMER_RATED
+}

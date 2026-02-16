@@ -1,0 +1,26 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.production
+*.log
+.DS_Store
+.vscode/
+.idea/
+coverage/
+*.swp
+*.swo
+*~
+
+# Server
+server/dist/
+server/node_modules/
+server/.env
+
+# Client
+client/node_modules/
+client/build/
+client/.env
+client/.env.local
+
