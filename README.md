@@ -124,6 +124,7 @@ agricultural-commodity-platform/
 └── QUICK_START.md             # Quick setup guide
 ```
 
+**Empowering farmers and buyers with transparent, efficient agricultural trade**
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -553,3 +554,6 @@ For issues, questions, or suggestions:
 ---
 
 **Empowering farmers and buyers with transparent, efficient agricultural trade**
+```
+
+```
