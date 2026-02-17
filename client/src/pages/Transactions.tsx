@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { format } from 'date-fns'
-import { CreditCard, DollarSign, Calendar, FileText, Filter, Search, RefreshCw, Trash2, CheckCircle, XCircle, ChevronDown } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { CreditCard, DollarSign, Calendar, FileText, Filter, Search, RefreshCw, Trash2, CheckCircle, XCircle, ChevronDown, ExternalLink } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Transaction } from '../types'
 
@@ -110,7 +111,8 @@ const Transactions = () => {
       (t.status.toLowerCase().includes(term)) ||
       (t.paymentMethod?.toLowerCase().includes(term)) ||
       (t.paymentType?.toLowerCase().includes(term)) ||
-      (t.id.toLowerCase().includes(term))
+      (t.id.toLowerCase().includes(term)) ||
+      (t.contractId.toLowerCase().includes(term))
     );
   }
 
@@ -294,7 +296,7 @@ const Transactions = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search transactions..."
+                placeholder="Search by product, farmer, buyer, amount, status, payment method, order ID or transaction ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="input pl-10 w-full"
@@ -378,12 +380,16 @@ const Transactions = () => {
                           {transaction.contract?.farmer?.name ||
                             transaction.contract?.buyer?.name}
                         </p>
-                        <div className="flex gap-2 mt-1">
-                          <span className="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-mono">
-                            Order ID: {transaction.contractId.substring(0, 8)}
-                          </span>
+                        <div className="flex gap-2 mt-1 flex-wrap">
+                          <Link 
+                            to={`/contracts/${transaction.contractId}`}
+                            className="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-mono hover:bg-purple-200 transition-colors flex items-center gap-1"
+                          >
+                            <span>Order ID: {transaction.contractId.substring(0, 8)}...</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
                           <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-mono">
-                            Trans ID: {transaction.id.substring(0, 8)}
+                            Trans ID: {transaction.id.substring(0, 8)}...
                           </span>
                         </div>
                       </div>

@@ -27,7 +27,7 @@ model User {
   notifications_notifications_recipientIdTousers notifications[] @relation("notifications_recipientIdTousers")
   notifications_notifications_senderIdTousers    notifications[] @relation("notifications_senderIdTousers")
   transactions                                   Transaction[]
-  ratingsGiven                                   FarmerRating[]  @relation("RatingsGiven")
+  ratingsAsRater                                 FarmerRating[]  @relation("RatingsGiven")
   ratingsReceived                                FarmerRating[]  @relation("RatingsReceived")
 
   @@map("users")
@@ -138,12 +138,10 @@ model FarmerRating {
   raterId     String
   rating      Int      // 1-5 stars
   comment     String?
-  contractId  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   farmer      User     @relation("RatingsReceived", fields: [farmerId], references: [id])
   rater       User     @relation("RatingsGiven", fields: [raterId], references: [id])
-  contract    Contract? @relation(fields: [contractId], references: [id])
 
   @@index([farmerId])
   @@index([raterId])

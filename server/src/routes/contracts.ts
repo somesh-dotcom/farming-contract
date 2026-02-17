@@ -220,6 +220,11 @@ router.patch('/:id/status', authenticate, async (req: AuthRequest, res) => {
       req.userRole === UserRole.ADMIN ||
       contract.farmerId === req.userId ||
       contract.buyerId === req.userId;
+    
+    // If trying to change from COMPLETED status, only ADMIN can do this
+    if (contract.status === ContractStatus.COMPLETED && req.userRole !== UserRole.ADMIN) {
+      return res.status(403).json({ message: 'Only admin can update completed contracts' });
+    }
 
     if (!canUpdate) {
       return res.status(403).json({ message: 'Access denied' });

@@ -14,6 +14,9 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - **Bilingual Support**: Full English and Kannada language support for wider accessibility
 - **Enhanced Admin Controls**: Advanced transaction management with status toggling and deletion capabilities
 - **Bangalore-Specific Locations**: Focused location selection for improved logistics and delivery management
+- **Automated Contract Completion**: Contracts automatically marked as COMPLETED when all payments are processed
+- **Improved Transaction Visibility**: Buyers can see all transactions related to their contracts, not just those they created
+- **Admin-Only Contract Status Changes**: Only admins can change COMPLETED contracts back to other statuses
 
 ### Key Benefits
 - ✅ **Market Transparency**: Real-time pricing data for informed decision-making
@@ -24,6 +27,9 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - ✅ **Multilingual Support**: Accessible in both English and Kannada for broader reach
 - ✅ **Enhanced Admin Controls**: Advanced transaction management capabilities
 - ✅ **Localized Delivery**: Bangalore-area-specific location selection for improved logistics
+- ✅ **Automated Contract Completion**: Contracts automatically marked as COMPLETED when all payments are processed
+- ✅ **Complete Transaction Visibility**: Buyers can see all transactions related to their contracts
+- ✅ **Secure Status Management**: Only admins can change completed contract statuses
 
 ## 🛠️ Tech Stack
 
@@ -286,6 +292,7 @@ npm run dev
   - View contracts offered to them
   - Approve/reject pending contracts
   - Track active contracts
+  - View all transactions related to their contracts
   - Initiate payments
 
 - **Admins** can:
@@ -295,6 +302,8 @@ npm run dev
   - Toggle transaction statuses (Pending ↔ Complete)
   - Delete transactions as needed
   - Manage Bangalore-specific location assignments
+  - Change contract statuses in both directions (PENDING ↔ COMPLETED)
+  - Override automated contract completion status when needed
 
 ### 4. Market Prices
 
@@ -311,6 +320,7 @@ npm run dev
 - View transaction status (Pending/Completed/Failed)
 - Monitor total amounts and pending payments
 - Record different payment types (Advance, Partial, Final, Refund)
+- **Enhanced Buyer Visibility**: Buyers can see all transactions related to their contracts, not just those they created
 - **Admin Features**: Administrators can now toggle transaction status between Pending and Complete, and delete transactions as needed
 
 ## 🔌 API Endpoints
@@ -326,7 +336,7 @@ npm run dev
 - `GET /api/contracts/:id` - Get contract details
 - `POST /api/contracts` - Create new contract
 - `PUT /api/contracts/:id` - Update contract
-- `PATCH /api/contracts/:id/status` - Update contract status
+- `PATCH /api/contracts/:id/status` - Update contract status (only admins can change COMPLETED contracts to other statuses)
 - `GET /api/contracts/user/:userId` - Get contracts for specific user
 
 ### Market Prices
@@ -343,10 +353,10 @@ npm run dev
 - `PUT /api/products/:id` - Update product (Admin)
 
 ### Transactions
-- `GET /api/transactions` - Get all transactions
+- `GET /api/transactions` - Get all transactions (filtered by user role - shows transactions for contracts user is part of as farmer/buyer)
 - `GET /api/transactions/contract/:contractId` - Get transactions for contract
-- `POST /api/transactions` - Create transaction
-- `PATCH /api/transactions/:id/status` - Update transaction status
+- `POST /api/transactions` - Create transaction (automatically updates contract to COMPLETED when all transactions complete)
+- `PATCH /api/transactions/:id/status` - Update transaction status (automatically updates contract to COMPLETED when all transactions complete)
 - `DELETE /api/transactions/:id` - Delete transaction (Admin only)
 - `GET /api/transactions/user/:userId` - Get transactions for user
 
@@ -381,6 +391,12 @@ DRAFT → PENDING → ACTIVE → COMPLETED
               ↓
          CANCELLED
 ```
+
+### Automatic Contract Completion
+
+- Contracts automatically transition to **COMPLETED** status when all related transactions are marked as COMPLETED
+- Admins retain full control and can change COMPLETED contracts back to other statuses
+- Non-admin users cannot change COMPLETED contracts to other statuses
 
 ## 🛠️ Development
 

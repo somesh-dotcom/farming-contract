@@ -23,6 +23,23 @@ async function main() {
   });
   console.log('✅ Created admin user:', admin.email);
 
+  // Create test farmer user
+  const farmerPassword = await bcrypt.hash('farmer123', 10);
+  const farmer = await prisma.user.upsert({
+    where: { email: 'farmer@test.com' },
+    update: {},
+    create: {
+      email: 'farmer@test.com',
+      password: farmerPassword,
+      name: 'Test Farmer',
+      role: 'FARMER',
+      phone: '+1234567890',
+      city: 'Farm City',
+      state: 'Farm State',
+    },
+  });
+  console.log('✅ Created test farmer user:', farmer.email);
+
   // Create test buyer user
   const buyerPassword = await bcrypt.hash('buyer123', 10);
   const buyer = await prisma.user.upsert({
@@ -113,6 +130,9 @@ async function main() {
   console.log('   Admin:');
   console.log('     Email: admin@contractfarming.com');
   console.log('     Password: admin123');
+  console.log('   Test Farmer:');
+  console.log('     Email: farmer@test.com');
+  console.log('     Password: farmer123');
   console.log('   Test Buyer:');
   console.log('     Email: buyer@test.com');
   console.log('     Password: buyer123');

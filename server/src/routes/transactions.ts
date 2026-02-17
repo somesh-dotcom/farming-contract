@@ -23,50 +23,62 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
       // Check if search term is a number for amount search
       const isNumeric = !isNaN(Number(searchStr));
       
-      filters.AND = [
-        filters, // Include any existing filters
-        {
-          OR: [
-            { id: { contains: searchStr, mode: 'insensitive' } },
-            { status: { contains: searchStr, mode: 'insensitive' } },
-            { paymentMethod: { contains: searchStr, mode: 'insensitive' } },
-            { paymentType: { contains: searchStr, mode: 'insensitive' } },
-            {
-              contract: {
-                product: {
-                  name: { contains: searchStr, mode: 'insensitive' }
-                }
-              }
-            },
-            {
-              contract: {
-                farmer: {
-                  name: { contains: searchStr, mode: 'insensitive' }
-                }
-              }
-            },
-            {
-              contract: {
-                buyer: {
-                  name: { contains: searchStr, mode: 'insensitive' }
-                }
-              }
-            },
-            ...(isNumeric ? [{ amount: { equals: Number(searchStr) } }] : [])
-          ]
-        }
-      ];
+      // Check if search term matches contract ID (order ID)
+      const isContractId = searchStr.length >= 8 && searchStr.length <= 36; // UUID length range
       
-      // Remove the AND wrapper if it only has one condition
-      if (filters.AND.length === 1) {
-        Object.assign(filters, filters.AND[0]);
-        delete filters.AND;
+      // Create a copy of existing filters to avoid recursion
+      const existingFilters = { ...filters };
+      delete existingFilters.AND; // Remove any existing AND to avoid nesting
+      
+      if (isContractId) {
+        // If it looks like a contract ID, search by exact match
+        filters.contractId = searchStr;
+      } else {
+        // Otherwise, do general search
+        filters.AND = [
+          existingFilters,
+          {
+            OR: [
+              { id: { contains: searchStr, mode: 'insensitive' } },
+              { status: { contains: searchStr, mode: 'insensitive' } },
+              { paymentMethod: { contains: searchStr, mode: 'insensitive' } },
+              { paymentType: { contains: searchStr, mode: 'insensitive' } },
+              ...(isNumeric ? [{ amount: { equals: Number(searchStr) } }] : []),
+              {
+                contract: {
+                  product: {
+                    name: { contains: searchStr, mode: 'insensitive' }
+                  }
+                }
+              },
+              {
+                contract: {
+                  farmer: {
+                    name: { contains: searchStr, mode: 'insensitive' }
+                  }
+                }
+              },
+              {
+                contract: {
+                  buyer: {
+                    name: { contains: searchStr, mode: 'insensitive' }
+                  }
+                }
+              }
+            ]
+          }
+        ];
       }
     }
 
     // Filter by user unless admin
+    // For non-admin users, show transactions for contracts they're part of (as farmer or buyer)
     if (req.userRole !== 'ADMIN') {
-      filters.userId = req.userId;
+      filters.OR = [
+        { userId: req.userId },
+        { contract: { farmerId: req.userId } },
+        { contract: { buyerId: req.userId } }
+      ];
     }
 
     const transactions = await prisma.transaction.findMany({
@@ -171,6 +183,21 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       }
     });
 
+    // Check if all transactions for this contract are completed
+    const allTransactions = await prisma.transaction.findMany({
+      where: { contractId: transaction.contractId }
+    });
+    
+    const allCompleted = allTransactions.every(t => t.status === 'COMPLETED');
+    
+    if (allCompleted && allTransactions.length > 0) {
+      // Update contract status to COMPLETED
+      await prisma.contract.update({
+        where: { id: contractId },
+        data: { status: 'COMPLETED' }
+      });
+    }
+    
     res.status(201).json({ message: 'Transaction created successfully', transaction });
   } catch (error: any) {
     console.error('Create transaction error:', error);
@@ -242,6 +269,21 @@ router.patch('/:id/status', authenticate, async (req: AuthRequest, res) => {
       }
     });
 
+    // Check if all transactions for this contract are completed
+    const allTransactions = await prisma.transaction.findMany({
+      where: { contractId: updatedTransaction.contractId }
+    });
+    
+    const allCompleted = allTransactions.every(t => t.status === 'COMPLETED');
+    
+    if (allCompleted && allTransactions.length > 0) {
+      // Update contract status to COMPLETED
+      await prisma.contract.update({
+        where: { id: updatedTransaction.contractId },
+        data: { status: 'COMPLETED' }
+      });
+    }
+    
     res.json({ message: 'Transaction status updated', transaction: updatedTransaction });
   } catch (error: any) {
     console.error('Update transaction error:', error);
