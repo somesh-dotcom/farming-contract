@@ -88,6 +88,18 @@ agricultural-commodity-platform/
 │   │   │   └── Users.tsx
 │   │   ├── types/             # TypeScript type definitions
 │   │   │   └── index.ts
+│   │   ├── utils/             # JavaScript utility modules
+│   │   │   ├── apiUtils.js
+│   │   │   ├── chartUtils.js
+│   │   │   ├── contractUtils.js
+│   │   │   ├── dataAnalytics.js
+│   │   │   ├── dateUtils.js
+│   │   │   ├── index.js
+│   │   │   ├── jsUtils.js
+│   │   │   ├── localization.js
+│   │   │   ├── marketPriceAnalysis.js
+│   │   │   ├── notificationUtils.js
+│   │   │   └── validationUtils.js
 │   │   ├── lib/               # Utility libraries
 │   │   │   └── queryClient.ts
 │   │   ├── App.tsx            # Main application component
@@ -121,7 +133,8 @@ agricultural-commodity-platform/
 ├── package.json               # Root package configuration
 ├── run.sh                     # Setup and execution script
 ├── README.md                  # Project documentation
-└── QUICK_START.md             # Quick setup guide
+├── QUICK_START.md             # Quick setup guide
+└── PROJECT_CHANGES_SUMMARY.md # Summary of all project changes and enhancements
 ```
 
 **Empowering farmers and buyers with transparent, efficient agricultural trade**
@@ -540,6 +553,23 @@ We welcome contributions to enhance the agricultural commodity trading platform!
 - Add tests for new functionality
 - Ensure all tests pass before submitting
 
+## 📦 Additional JavaScript Utilities
+
+This project includes comprehensive JavaScript utility modules:
+
+- **General Utilities** (`jsUtils.js`): Currency formatting, mathematical calculations, validations
+- **Market Analysis** (`marketPriceAnalysis.js`): Price trends, volatility, predictions
+- **Contract Management** (`contractUtils.js`): Status tracking, completion calculations
+- **Chart Visualization** (`chartUtils.js`): Data preparation for charts
+- **Localization** (`localization.js`): Multi-language support (English/Kannada)
+- **Notifications** (`notificationUtils.js`): Toasts, dialogs, loading spinners
+- **Validation** (`validationUtils.js`): Form and input validation
+- **Data Analytics** (`dataAnalytics.js`): Statistical calculations and analysis
+- **Date/Time Operations** (`dateUtils.js`): Date formatting and manipulation
+- **API Utilities** (`apiUtils.js`): Request handling and error management
+
+These utilities can be imported individually or as a complete suite via the main index file.
+
 ## 📄 License
 
 MIT License - Feel free to use, modify, and distribute this software.
@@ -554,6 +584,3 @@ For issues, questions, or suggestions:
 ---
 
 **Empowering farmers and buyers with transparent, efficient agricultural trade**
-```
-
-```
