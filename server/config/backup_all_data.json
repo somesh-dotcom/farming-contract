@@ -1,0 +1,28 @@
+{
+  "products": [
+    {
+      "id": "prod_1772871532012",
+      "name": "Test Product",
+      "category": "GRAINS",
+      "unit": "kg",
+      "description": "Test product for demonstration",
+      "minQuantity": 100,
+      "active": true
+    }
+  ],
+  "marketPrices": [],
+  "locations": [],
+  "users": [
+    {
+      "id": "user_001",
+      "name": "Admin User",
+      "email": "admin@contractfarming.com",
+      "password": "$2b$10$YourHashedPasswordHere",
+      "role": "ADMIN",
+      "phone": "+919876543210",
+      "location": "Bangalore",
+      "createdAt": "2026-03-07T08:28:17.073Z"
+    }
+  ],
+  "contracts": []
+}
