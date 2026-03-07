@@ -1,0 +1,57 @@
+[
+  {
+    "id": "price_001",
+    "productId": "prod_001",
+    "productName": "Wheat",
+    "price": 2500,
+    "currency": "INR",
+    "unit": "kg",
+    "location": "Bangalore",
+    "area": "Yeshwanthpur",
+    "timestamp": "2025-02-17T10:00:00Z"
+  },
+  {
+    "id": "price_002",
+    "productId": "prod_002",
+    "productName": "Rice",
+    "price": 3500,
+    "currency": "INR",
+    "unit": "kg",
+    "location": "Bangalore",
+    "area": "KR Market",
+    "timestamp": "2025-02-17T10:00:00Z"
+  },
+  {
+    "id": "price_003",
+    "productId": "prod_003",
+    "productName": "Tomato",
+    "price": 40,
+    "currency": "INR",
+    "unit": "kg",
+    "location": "Bangalore",
+    "area": "Yeshwanthpur",
+    "timestamp": "2025-02-17T10:00:00Z"
+  },
+  {
+    "id": "price_004",
+    "productId": "prod_004",
+    "productName": "Potato",
+    "price": 30,
+    "currency": "INR",
+    "unit": "kg",
+    "location": "Bangalore",
+    "area": "KR Market",
+    "timestamp": "2025-02-17T10:00:00Z"
+  },
+  {
+    "id": "price_005",
+    "productId": "prod_005",
+    "productName": "Mango",
+    "price": 150,
+    "currency": "INR",
+    "unit": "kg",
+    "location": "Bangalore",
+    "area": "Yeshwanthpur",
+    "timestamp": "2025-02-17T10:00:00Z"
+  }
+]

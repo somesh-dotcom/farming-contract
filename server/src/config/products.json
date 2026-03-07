@@ -1,0 +1,11 @@
+[
+  {
+    "id": "prod_1772871532012",
+    "name": "Test Product",
+    "category": "GRAINS",
+    "unit": "kg",
+    "description": "Test product for demonstration",
+    "minQuantity": 100,
+    "active": true
+  }
+]

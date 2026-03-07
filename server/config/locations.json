@@ -1,0 +1,74 @@
+[
+  {
+    "id": "loc_001",
+    "city": "Bangalore",
+    "area": "Yeshwanthpur",
+    "state": "Karnataka",
+    "pincode": "560022",
+    "isActive": true,
+    "isDefault": true
+  },
+  {
+    "id": "loc_002",
+    "city": "Bangalore",
+    "area": "KR Market",
+    "state": "Karnataka",
+    "pincode": "560002",
+    "isActive": true,
+    "isDefault": true
+  },
+  {
+    "id": "loc_003",
+    "city": "Bangalore",
+    "area": "Majestic",
+    "state": "Karnataka",
+    "pincode": "560009",
+    "isActive": true,
+    "isDefault": false
+  },
+  {
+    "id": "loc_004",
+    "city": "Bangalore",
+    "area": "Jayanagar",
+    "state": "Karnataka",
+    "pincode": "560011",
+    "isActive": true,
+    "isDefault": false
+  },
+  {
+    "id": "loc_005",
+    "city": "Bangalore",
+    "area": "Indiranagar",
+    "state": "Karnataka",
+    "pincode": "560038",
+    "isActive": true,
+    "isDefault": false
+  },
+  {
+    "id": "loc_006",
+    "city": "Bangalore",
+    "area": "Koramangala",
+    "state": "Karnataka",
+    "pincode": "560034",
+    "isActive": true,
+    "isDefault": false
+  },
+  {
+    "id": "loc_007",
+    "city": "Bangalore",
+    "area": "Whitefield",
+    "state": "Karnataka",
+    "pincode": "560066",
+    "isActive": true,
+    "isDefault": false
+  },
+  {
+    "id": "loc_008",
+    "city": "Bangalore",
+    "area": "HSR Layout",
+    "state": "Karnataka",
+    "pincode": "560102",
+    "isActive": true,
+    "isDefault": false
+  }
+]
