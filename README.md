@@ -30,6 +30,7 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - ✅ **Automated Contract Completion**: Contracts automatically marked as COMPLETED when all payments are processed
 - ✅ **Complete Transaction Visibility**: Buyers can see all transactions related to their contracts
 - ✅ **Secure Status Management**: Only admins can change completed contract statuses
+- ✅ **Flexible Storage Options**: PostgreSQL for production or JSON file storage for development/testing
 
 ## 🛠️ Tech Stack
 
@@ -37,7 +38,8 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - **Node.js** with **Express.js**
 - **TypeScript** for enhanced type safety
 - **Prisma ORM** for robust database management
-- **PostgreSQL** for reliable data persistence
+- **PostgreSQL** for reliable data persistence (Production)
+- **JSON File Database** for simple setup and portability (Development/Testing)
 - **JWT** for secure authentication
 - **BcryptJS** for secure password hashing
 - **Zod** for schema validation
@@ -142,7 +144,7 @@ agricultural-commodity-platform/
 
 ### Prerequisites
 - **Node.js** (v18 or higher)
-- **PostgreSQL** (v12 or higher)
+- **PostgreSQL** (v12 or higher) - Optional for file-based database mode
 - **Git** for version control
 
 ### Automated Setup
@@ -174,6 +176,8 @@ npm run install:all
 
 #### 3. Database Setup
 
+**Option A: PostgreSQL Database (Production)**
+
 1. **Create PostgreSQL Database**
 
 ```sql
@@ -197,6 +201,7 @@ JWT_SECRET="your-super-secret-jwt-key-change-in-production"
 JWT_EXPIRES_IN="7d"
 PORT=5000
 NODE_ENV=development
+USE_FILE_DATABASE=false  # Set to false for PostgreSQL
 ```
 
 3. **Run Database Migrations**
@@ -217,6 +222,34 @@ This will:
 ```bash
 npm run prisma:studio
 ```
+
+**Option B: JSON File Database (Development/Testing)**
+
+1. **Enable File Database**
+
+Edit `server/.env`:
+
+```env
+USE_FILE_DATABASE=true           # Enable file-based storage
+FILE_DATABASE_AUTO_SAVE=true     # Auto-save changes
+FILE_DATABASE_PATH=./config/database.json
+```
+
+2. **No Database Setup Required**
+
+The application will use `/server/config/database.json` to store all data.
+Sample data is pre-loaded, so you can start immediately!
+
+**Benefits of File Database:**
+- ✅ No PostgreSQL installation needed
+- ✅ Easy setup - just run and go
+- ✅ Portable - single file contains all data
+- ✅ Easy backup and restore
+- ✅ Perfect for development and testing
+- ✅ Version control friendly
+
+**Switch Between Modes:**
+Simply toggle `USE_FILE_DATABASE` in `.env` between `true` (file) and `false` (PostgreSQL).
 
 #### 4. Seed Initial Data
 
@@ -268,15 +301,21 @@ npm run dev
    - **Admin**: Full system access, user management
 4. Fill in your details and create an account
 
-> **Default Accounts**:
+> **Default Accounts** (File Database Mode):
 >
 > **Admin Account**:
 > - Email: `admin@contractfarming.com`
-> - Password: `admin123`
+> - Password: `password123`
 >
-> **Test Buyer Account**:
-> - Email: `buyer@test.com`
-> - Password: `buyer123`
+> **Farmer Account**:
+> - Email: `farmer@example.com`
+> - Password: `password123`
+>
+> **Buyer Account**:
+> - Email: `buyer@example.com`
+> - Password: `password123`
+>
+> **PostgreSQL Mode**: Run the seed script to create default accounts.
 >
 > You can use these accounts to access the system. For security, consider changing the passwords after first login.
 
@@ -380,9 +419,55 @@ npm run dev
 - `GET /api/users/stats/:userId` - Get user statistics
 - `PUT /api/users/:id` - Update user profile
 
-## 🗄️ Database Schema
+## 🗄️ Database Options
 
-### Main Entities
+### Option A: PostgreSQL (Production)
+
+Full relational database with Prisma ORM for production deployments.
+
+### Option B: JSON File Database (Development/Testing)
+
+All data stored in a single JSON file: `/server/config/database.json`
+
+**Data Storage:**
+- All application data in one portable file
+- Automatic saving on every write operation
+- Pre-loaded with sample data (users, products, contracts, prices)
+- Easy backup and restore
+- No database server required
+
+**Sample Data Included:**
+- 3 Users (Admin, Farmer, Buyer)
+- 5 Products (Tomato, Potato, Onion, Rice, Wheat)
+- 1 Active Contract
+- 3 Market Prices
+- 1 Transaction
+
+**View Your Data:**
+```bash
+# View all users
+cat server/config/database.json | jq '.users'
+
+# View entire database
+cat server/config/database.json
+
+# Or open in any text editor/JSON viewer
+```
+
+**Backup Data:**
+```bash
+cp server/config/database.json server/config/backup_$(date +%Y%m%d).json
+```
+
+**Reset to Default:**
+```bash
+rm server/config/database.json
+npm run dev  # Server recreates with sample data
+```
+
+For detailed information, see [`FILE_DATABASE_GUIDE.md`](server/FILE_DATABASE_GUIDE.md).
+
+### Main Entities (Both Modes)
 
 - **User**: Stores farmer, buyer, and admin information with authentication
 - **Product**: Agricultural commodities with categorization and units
@@ -458,6 +543,8 @@ npm run build
 
 ### Database Management
 
+**PostgreSQL Mode:**
+
 ```bash
 # Create a new migration
 cd server
@@ -476,27 +563,59 @@ npx prisma db pull
 npx prisma db push
 ```
 
+**File Database Mode:**
+
+```bash
+# View data
+cat server/config/database.json
+
+# Backup data
+cp server/config/database.json server/config/backup.json
+
+# Reset to default (delete file, server recreates)
+rm server/config/database.json
+
+# Import/Export data (programmatically)
+const { dbFileManager } = require('./src/config/dbFileManager');
+dbFileManager.exportAll('./backup.json');
+dbFileManager.importAll('./backup.json');
+```
+
 ### Environment Variables
 
 **Server (.env)**:
 
 ```env
+# PostgreSQL Mode (USE_FILE_DATABASE=false)
 DATABASE_URL="postgresql://user:password@localhost:5432/contract_farming"
 JWT_SECRET="your-secret-key"
 JWT_EXPIRES_IN="7d"
 PORT=5000
 NODE_ENV=development
+USE_FILE_DATABASE=false
+
+# File Database Mode (USE_FILE_DATABASE=true)
+USE_FILE_DATABASE=true
+FILE_DATABASE_AUTO_SAVE=true
+FILE_DATABASE_PATH=./config/database.json
+FILE_DATABASE_BACKUP_PATH=./config/backup_all_data.json
 ```
 
 ## 🐞 Troubleshooting
 
 ### Common Issues
 
-**Database Connection Issues**:
+**Database Connection Issues** (PostgreSQL Mode):
 - Verify PostgreSQL is running
 - Check DATABASE_URL in `server/.env`
 - Ensure database exists: `CREATE DATABASE contract_farming;`
 - Confirm PostgreSQL service is active
+
+**File Database Issues**:
+- Check `USE_FILE_DATABASE=true` in `.env`
+- Ensure write permissions for `/server/config/` directory
+- Verify `database.json` file exists and is valid JSON
+- Delete `database.json` to reset to default sample data
 
 **Port Already in Use**:
 - Change PORT in `server/.env`
@@ -527,10 +646,13 @@ npm run install:all
 
 ### Development Tips
 
-- Always run database migrations after schema changes
+- Always run database migrations after schema changes (PostgreSQL mode)
 - Use the seed script to populate sample data during development
 - Check the browser console and server logs for detailed error messages
-- Use Prisma Studio to inspect database contents
+- Use Prisma Studio to inspect database contents (PostgreSQL mode)
+- Use file database mode for quick setup and testing
+- Backup `database.json` regularly when using file storage
+- Switch between PostgreSQL and file database by toggling `USE_FILE_DATABASE`
 
 ## 🤝 Contributing
 
