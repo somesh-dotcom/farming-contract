@@ -1,0 +1,34 @@
+[
+  {
+    "id": "contract_001",
+    "farmerId": "user_002",
+    "buyerId": "user_003",
+    "productId": "prod_001",
+    "quantity": 500,
+    "pricePerUnit": 2500,
+    "totalPrice": 1250000,
+    "unit": "kg",
+    "startDate": "2025-02-01",
+    "deliveryDate": "2025-03-01",
+    "location": "Bangalore",
+    "area": "Yeshwanthpur",
+    "status": "ACTIVE",
+    "createdAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "contract_002",
+    "farmerId": "user_002",
+    "buyerId": "user_003",
+    "productId": "prod_002",
+    "quantity": 300,
+    "pricePerUnit": 3500,
+    "totalPrice": 1050000,
+    "unit": "kg",
+    "startDate": "2025-02-01",
+    "deliveryDate": "2025-03-15",
+    "location": "Bangalore",
+    "area": "KR Market",
+    "status": "PENDING",
+    "createdAt": "2025-01-20T14:00:00Z"
+  }
+]

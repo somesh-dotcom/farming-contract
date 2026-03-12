@@ -1,0 +1,47 @@
+[
+  {
+    "id": "prod_001",
+    "name": "Wheat",
+    "category": "GRAINS",
+    "unit": "kg",
+    "description": "High quality wheat grains",
+    "minQuantity": 100,
+    "active": true
+  },
+  {
+    "id": "prod_002",
+    "name": "Rice",
+    "category": "GRAINS",
+    "unit": "kg",
+    "description": "Premium basmati rice",
+    "minQuantity": 100,
+    "active": true
+  },
+  {
+    "id": "prod_003",
+    "name": "Tomato",
+    "category": "VEGETABLES",
+    "unit": "kg",
+    "description": "Fresh red tomatoes",
+    "minQuantity": 50,
+    "active": true
+  },
+  {
+    "id": "prod_004",
+    "name": "Potato",
+    "category": "VEGETABLES",
+    "unit": "kg",
+    "description": "Organic potatoes",
+    "minQuantity": 50,
+    "active": true
+  },
+  {
+    "id": "prod_005",
+    "name": "Mango",
+    "category": "FRUITS",
+    "unit": "kg",
+    "description": "Alphonso mangoes",
+    "minQuantity": 25,
+    "active": true
+  }
+]
