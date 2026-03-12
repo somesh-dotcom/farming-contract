@@ -17,6 +17,9 @@ const DATA_FILES = {
   contracts: path.join(CONFIG_DIR, 'contracts.json')
 };
 
+// Single database file path (when USE_FILE_DATABASE is true)
+const DATABASE_FILE_PATH = process.env.FILE_DATABASE_PATH || path.join(CONFIG_DIR, 'database.json');
+
 /**
  * Load configuration from environment variables
  */
@@ -83,6 +86,20 @@ const config = {
  * @returns {Array|null} Loaded data or null if file doesn't exist
  */
 function loadDataFromFile(dataType) {
+  // Check if using single database file
+  const useFileDatabase = process.env.USE_FILE_DATABASE === 'true';
+  
+  if (useFileDatabase && fs.existsSync(DATABASE_FILE_PATH)) {
+    try {
+      const allData = JSON.parse(fs.readFileSync(DATABASE_FILE_PATH, 'utf8'));
+      return allData[dataType] || [];
+    } catch (error) {
+      console.error(`Error loading data from ${DATABASE_FILE_PATH}:`, error.message);
+      return null;
+    }
+  }
+  
+  // Otherwise, use individual files
   const filePath = DATA_FILES[dataType];
   
   if (!filePath) {
@@ -111,6 +128,35 @@ function loadDataFromFile(dataType) {
  * @returns {boolean} Success status
  */
 function saveDataToFile(dataType, data) {
+  // Check if using single database file
+  const useFileDatabase = process.env.USE_FILE_DATABASE === 'true';
+  
+  if (useFileDatabase) {
+    try {
+      // Load all existing data
+      let allData = {};
+      if (fs.existsSync(DATABASE_FILE_PATH)) {
+        allData = JSON.parse(fs.readFileSync(DATABASE_FILE_PATH, 'utf8'));
+      }
+      
+      // Update the specific data type
+      allData[dataType] = data;
+      
+      // Ensure config directory exists
+      if (!fs.existsSync(CONFIG_DIR)) {
+        fs.mkdirSync(CONFIG_DIR, { recursive: true });
+      }
+      
+      // Save all data back to the single file
+      fs.writeFileSync(DATABASE_FILE_PATH, JSON.stringify(allData, null, 2), 'utf8');
+      return true;
+    } catch (error) {
+      console.error(`Error saving data to ${DATABASE_FILE_PATH}:`, error.message);
+      return false;
+    }
+  }
+  
+  // Otherwise, use individual files
   const filePath = DATA_FILES[dataType];
   
   if (!filePath) {

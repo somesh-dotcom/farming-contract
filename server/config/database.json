@@ -1,0 +1,191 @@
+{
+  "users": [
+    {
+      "id": "user_admin_001",
+      "email": "admin@contractfarming.com",
+      "password": "$2b$10$rH7zKpJvN3qPxQz8YqLbMOqLKxJz5vF9nR8wX2yT1cU6dE4sA3bP.",
+      "name": "Admin User",
+      "role": "ADMIN",
+      "phone": "+91 9876543210",
+      "address": "MG Road",
+      "city": "Bangalore",
+      "state": "Karnataka",
+      "pincode": "560001",
+      "rating": 5.0,
+      "totalRatings": 0,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "user_farmer_001",
+      "email": "farmer@example.com",
+      "password": "$2b$10$rH7zKpJvN3qPxQz8YqLbMOqLKxJz5vF9nR8wX2yT1cU6dE4sA3bP.",
+      "name": "Ramesh Kumar",
+      "role": "FARMER",
+      "phone": "+91 9123456789",
+      "address": "Whitefield",
+      "city": "Bangalore",
+      "state": "Karnataka",
+      "pincode": "560066",
+      "rating": 4.5,
+      "totalRatings": 12,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "user_buyer_001",
+      "email": "buyer@example.com",
+      "password": "$2b$10$rH7zKpJvN3qPxQz8YqLbMOqLKxJz5vF9nR8wX2yT1cU6dE4sA3bP.",
+      "name": "Suresh Patel",
+      "role": "BUYER",
+      "phone": "+91 9988776655",
+      "address": "Indiranagar",
+      "city": "Bangalore",
+      "state": "Karnataka",
+      "pincode": "560038",
+      "rating": 4.8,
+      "totalRatings": 8,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod_001",
+      "name": "Tomato",
+      "category": "VEGETABLES",
+      "unit": "kg",
+      "description": "Fresh red tomatoes",
+      "minQuantity": 100,
+      "active": true,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "prod_002",
+      "name": "Potato",
+      "category": "VEGETABLES",
+      "unit": "kg",
+      "description": "Organic potatoes",
+      "minQuantity": 200,
+      "active": true,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "prod_003",
+      "name": "Onion",
+      "category": "VEGETABLES",
+      "unit": "kg",
+      "description": "Red onions",
+      "minQuantity": 150,
+      "active": true,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "prod_004",
+      "name": "Rice",
+      "category": "GRAINS",
+      "unit": "quintal",
+      "description": "Basmati rice",
+      "minQuantity": 50,
+      "active": true,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "prod_005",
+      "name": "Wheat",
+      "category": "GRAINS",
+      "unit": "quintal",
+      "description": "Whole wheat",
+      "minQuantity": 100,
+      "active": true,
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    }
+  ],
+  "contracts": [
+    {
+      "id": "contract_001",
+      "farmerId": "user_farmer_001",
+      "buyerId": "user_buyer_001",
+      "productId": "prod_001",
+      "quantity": 500,
+      "price": 25,
+      "totalValue": 12500,
+      "status": "ACTIVE",
+      "deliveryDate": "2026-04-15",
+      "paymentType": "PARTIAL",
+      "advanceAmount": 5000,
+      "location": "Whitefield, Bangalore",
+      "terms": "Quality must be Grade A",
+      "createdAt": "2026-03-10T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    }
+  ],
+  "marketPrices": [
+    {
+      "id": "price_001",
+      "productId": "prod_001",
+      "price": 24,
+      "currency": "INR",
+      "unit": "kg",
+      "location": "Bangalore",
+      "date": "2026-03-12",
+      "trend": "stable",
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "price_002",
+      "productId": "prod_002",
+      "price": 18,
+      "currency": "INR",
+      "unit": "kg",
+      "location": "Bangalore",
+      "date": "2026-03-12",
+      "trend": "up",
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    },
+    {
+      "id": "price_003",
+      "productId": "prod_003",
+      "price": 30,
+      "currency": "INR",
+      "unit": "kg",
+      "location": "Bangalore",
+      "date": "2026-03-12",
+      "trend": "down",
+      "createdAt": "2026-03-12T00:00:00.000Z",
+      "updatedAt": "2026-03-12T00:00:00.000Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "txn_001",
+      "contractId": "contract_001",
+      "buyerId": "user_buyer_001",
+      "amount": 5000,
+      "paymentType": "ADVANCE",
+      "status": "COMPLETED",
+      "paymentMethod": "UPI",
+      "transactionDate": "2026-03-10T00:00:00.000Z",
+      "remarks": "Advance payment for contract #001",
+      "createdAt": "2026-03-10T00:00:00.000Z",
+      "updatedAt": "2026-03-10T00:00:00.000Z"
+    }
+  ],
+  "notifications": [],
+  "locations": [
+    {
+      "id": "loc_001",
+      "name": "Bangalore",
+      "state": "Karnataka",
+      "type": "CITY",
+      "areas": ["Whitefield", "Indiranagar", "Koramangala", "HSR Layout", "BTM Layout"]
+    }
+  ]
+}

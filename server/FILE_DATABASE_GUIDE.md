@@ -1,434 +1,227 @@
-# File-Based Database System
+# File-Based Database Setup Guide
 
-## 🎯 Overview
+## Overview
 
-Your project now supports **complete file-based database storage**! You can store ALL your data in JSON files instead of using PostgreSQL. This is perfect for:
+This project now supports storing all data in a **single JSON file** (`database.json`) instead of using PostgreSQL. This is perfect for development, testing, or lightweight deployments.
 
-- ✅ Development and testing
-- ✅ Small deployments
-- ✅ Quick prototyping
-- ✅ Offline demos
-- ✅ Easy backups and migrations
+## Configuration
 
-## 📁 Complete File Structure
+### Environment Variables (`.env` file)
+
+```bash
+# Enable file-based database
+USE_FILE_DATABASE=true
+
+# Auto-save changes to file
+FILE_DATABASE_AUTO_SAVE=true
+
+# Main database file location
+FILE_DATABASE_PATH=./config/database.json
+
+# Backup file location
+FILE_DATABASE_BACKUP_PATH=./config/backup_all_data.json
+```
+
+## Data Storage Location
+
+All your data is stored in: **`/server/config/database.json`**
+
+This single file contains:
+- `users` - User accounts (admin, farmers, buyers)
+- `products` - Agricultural products
+- `contracts` - Farming contracts
+- `marketPrices` - Market price data
+- `transactions` - Payment transactions
+- `notifications` - User notifications
+- `locations` - Geographic locations
+
+## Default Sample Data
+
+The database comes pre-loaded with:
+
+### Users (3 default accounts)
+1. **Admin**: `admin@contractfarming.com` / password: `password123`
+2. **Farmer**: `farmer@example.com` / password: `password123`
+3. **Buyer**: `buyer@example.com` / password: `password123`
+
+### Products (5 items)
+- Tomato, Potato, Onion (Vegetables)
+- Rice, Wheat (Grains)
+
+### Sample Data
+- 1 active contract
+- 3 market price entries
+- 1 transaction
+
+## How It Works
+
+### Reading Data
+When `USE_FILE_DATABASE=true`, the system reads from `database.json` instead of PostgreSQL:
+
+```javascript
+// Example: Load users
+const users = dbFileManager.findMany('users');
+
+// Example: Find user by email
+const user = dbFileManager.findFirst('users', { email: 'test@example.com' });
+```
+
+### Writing Data
+All changes are automatically saved to `database.json`:
+
+```javascript
+// Example: Create new user
+const newUser = dbFileManager.create('users', {
+  email: 'newuser@example.com',
+  name: 'John Doe',
+  role: 'FARMER',
+  // ... other fields
+});
+
+// Example: Update user
+dbFileManager.update('users', 
+  { id: 'user_001' },
+  { phone: '+91 9876543210' }
+);
+
+// Example: Delete user
+dbFileManager.delete('users', { id: 'user_001' });
+```
+
+## Switching Between PostgreSQL and File Database
+
+### Use File Database (Development/Testing)
+```bash
+USE_FILE_DATABASE=true
+```
+
+### Use PostgreSQL (Production)
+```bash
+USE_FILE_DATABASE=false
+```
+
+## Managing Your Data
+
+### View/Edit Data
+You can directly edit `database.json` in any text editor, or use the application UI.
+
+### Backup Data
+```bash
+# The backup is automatically created at:
+/server/config/backup_all_data.json
+```
+
+### Reset to Default Data
+1. Delete `database.json`
+2. Restart the server - it will create a new one with sample data
+
+### Import/Export Data
+
+**Export:**
+```javascript
+const { dbFileManager } = require('./src/config/dbFileManager');
+dbFileManager.exportAll('./config/my_backup.json');
+```
+
+**Import:**
+```javascript
+dbFileManager.importAll('./config/my_backup.json');
+```
+
+## API Endpoints (Work the Same Way)
+
+All existing API endpoints work without any changes:
+
+```bash
+# Register new user
+POST /api/auth/register
+
+# Get all products
+GET /api/products
+
+# Create contract
+POST /api/contracts
+
+# Get market prices
+GET /api/market-prices
+```
+
+## Advantages
+
+✅ **No Database Setup** - No need to install PostgreSQL  
+✅ **Portable** - Easy to share/copy data  
+✅ **Version Control** - Can track changes in Git  
+✅ **Simple Backup** - Single file backup  
+✅ **Easy Testing** - Quick to reset/reload data  
+✅ **Offline Ready** - Works without database server  
+
+## Limitations
+
+⚠️ **Not for Production** - Use PostgreSQL for production  
+⚠️ **No Transactions** - Limited ACID compliance  
+⚠️ **File Size** - Not suitable for very large datasets (>100MB)  
+⚠️ **Concurrency** - Limited support for multiple writers  
+
+## Troubleshooting
+
+### Data Not Saving
+Check that:
+- `USE_FILE_DATABASE=true` in `.env`
+- File permissions allow writing to `database.json`
+- Server has write access to `/server/config/` directory
+
+### Corrupted Data
+If `database.json` gets corrupted:
+1. Restore from `backup_all_data.json`
+2. Or delete and restart server to get default data
+
+### Switching Back to PostgreSQL
+1. Set `USE_FILE_DATABASE=false`
+2. Ensure PostgreSQL is running
+3. Run migrations: `npx prisma migrate dev`
+
+## File Structure
 
 ```
 server/
-├── .env                          ← Configuration flags
-├── config/                       ← ALL DATABASE DATA STORED HERE
-│   ├── users.json               ← User accounts (farmers, buyers, admins)
-│   ├── products.json            ← Product catalog
-│   ├── marketPrices.json        ← Market price data
-│   ├── locations.json           ← Location information
-│   ├── contracts.json           ← Contract agreements
-│   └── transactions.json        ← Transaction records
+├── config/
+│   ├── database.json          # Main database file (ALL data)
+│   ├── backup_all_data.json   # Automatic backup
+│   ├── products.json          # Individual files (optional)
+│   ├── users.json
+│   └── ...
 ├── src/
 │   ├── config/
-│   │   ├── index.js             ← Config manager
-│   │   └── dbFileManager.js     ← File-based database engine
-│   ├── fileDatabaseDemo.js      ← Demo script
-│   └── configUsageExample.js    ← Config example
-└── CONFIGURATION.md             ← Documentation
+│   │   ├── index.js           # Configuration loader
+│   │   └── dbFileManager.js   # File operations
+│   └── routes/                # API routes
+└── .env                       # Configuration
 ```
 
-## ⚡ Quick Start (2 Options)
-
-### Option 1: Pure File-Based Database (No PostgreSQL)
-
-**Step 1:** Edit `server/.env`
+## Example: Adding a New User via API
 
 ```bash
-# Disable PostgreSQL, use JSON files
-USE_FILE_DATABASE=true
-FILE_DATABASE_AUTO_SAVE=true
-```
-
-**Step 2:** Edit your data files in `server/config/`
-
-**Step 3:** Restart server
-
-```bash
-cd server
-npm run dev
-```
-
-That's it! No database needed!
-
-### Option 2: Hybrid Mode (Files + Database)
-
-```bash
-# Use database but load some data from files
-USE_FILE_DATABASE=false
-LOAD_PRODUCTS_FROM_FILE=true
-LOAD_LOCATIONS_FROM_FILE=true
-```
-
-This loads products and locations from files, other data from database.
-
-## 🔧 Database Operations
-
-The file-based system supports all standard database operations:
-
-### Create (Insert)
-
-```javascript
-const { dbFileManager } = require('./config/dbFileManager');
-
-// Create a new user
-const user = dbFileManager.create('users', {
-  name: 'John Farmer',
-  email: 'john@example.com',
-  role: 'FARMER',
-  phone: '+919876543210',
-  location: 'Bangalore'
-});
-
-console.log(`Created user with ID: ${user.id}`);
-```
-
-### Read (Query)
-
-```javascript
-// Get all users
-const allUsers = dbFileManager.findMany('users');
-
-// Get users with filter
-const farmers = dbFileManager.findMany('users', { role: 'FARMER' });
-
-// Get single user
-const admin = dbFileManager.findFirst('users', { role: 'ADMIN' });
-
-// Get by ID
-const user = dbFileManager.findUnique('users', 'user_001');
-```
-
-### Update
-
-```javascript
-// Update single record
-const updated = dbFileManager.update(
-  'users',
-  { email: 'john@example.com' },
-  { phone: '+919999999999' }
-);
-
-// Update many records
-const result = dbFileManager.updateMany(
-  'contracts',
-  { status: 'PENDING' },
-  { status: 'ACTIVE' }
-);
-```
-
-### Delete
-
-```javascript
-// Delete single record
-const deleted = dbFileManager.delete('users', { 
-  email: 'john@example.com' 
-});
-
-// Delete many records
-const result = dbFileManager.deleteMany('contracts', {
-  status: 'CANCELLED'
-});
-```
-
-### Advanced Queries
-
-```javascript
-// Count records
-const farmerCount = dbFileManager.count('users', { role: 'FARMER' });
-
-// Complex filters
-const activeContracts = dbFileManager.findMany('contracts', {
-  status: 'ACTIVE',
-  location: 'Bangalore'
-});
-
-// Range queries
-const largeContracts = dbFileManager.findMany('contracts', {
-  totalPrice: { gte: 1000000 }  // greater than or equal
-});
-```
-
-## 📊 Supported Models
-
-| Model | File Name | Description |
-|-------|-----------|-------------|
-| `users` | users.json | User accounts (all roles) |
-| `products` | products.json | Agricultural products |
-| `marketPrices` | marketPrices.json | Real-time price data |
-| `locations` | locations.json | Delivery locations |
-| `contracts` | contracts.json | Contract agreements |
-| `transactions` | transactions.json | Payment records |
-
-## 💡 Usage in API Routes
-
-### Example: Users Controller
-
-```javascript
-// server/src/routes/users.js
-const express = require('express');
-const { dbFileManager } = require('../config/dbFileManager');
-const router = express.Router();
-
-// GET /api/users - Get all users
-router.get('/', (req, res) => {
-  const users = dbFileManager.findMany('users');
-  res.json(users);
-});
-
-// GET /api/users/:id - Get user by ID
-router.get('/:id', (req, res) => {
-  const user = dbFileManager.findUnique('users', req.params.id);
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-  res.json(user);
-});
-
-// POST /api/users - Create user
-router.post('/', (req, res) => {
-  try {
-    const user = dbFileManager.create('users', req.body);
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// PUT /api/users/:id - Update user
-router.put('/:id', (req, res) => {
-  const user = dbFileManager.update(
-    'users',
-    { id: req.params.id },
-    req.body
-  );
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-  res.json(user);
-});
-
-// DELETE /api/users/:id - Delete user
-router.delete('/:id', (req, res) => {
-  const user = dbFileManager.delete('users', { id: req.params.id });
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-  res.json({ message: 'User deleted successfully' });
-});
-
-module.exports = router;
-```
-
-### Example: Contracts Controller
-
-```javascript
-// server/src/routes/contracts.js
-const { dbFileManager } = require('../config/dbFileManager');
-
-// GET /api/contracts - Get all contracts
-router.get('/', async (req, res) => {
-  let contracts = dbFileManager.findMany('contracts');
-  
-  // Filter by user role if needed
-  if (req.user.role === 'FARMER') {
-    contracts = contracts.filter(c => c.farmerId === req.user.id);
-  } else if (req.user.role === 'BUYER') {
-    contracts = contracts.filter(c => c.buyerId === req.user.id);
-  }
-  
-  res.json(contracts);
-});
-
-// POST /api/contracts - Create contract
-router.post('/', async (req, res) => {
-  const contract = dbFileManager.create('contracts', {
-    ...req.body,
-    status: 'PENDING',
-    createdAt: new Date().toISOString()
-  });
-  res.status(201).json(contract);
-});
-```
-
-## 🔄 Migration from Database
-
-### Export Existing Data
-
-```javascript
-const { dbFileManager } = require('./config/dbFileManager');
-
-// Export all data to backup file
-dbFileManager.exportAll('./config/backup_from_database.json');
-console.log('✓ All data exported!');
-```
-
-### Import to Files
-
-```javascript
-// If you have existing data in database, export it first
-// Then import to file system
-dbFileManager.importAll('./config/backup_from_database.json');
-console.log('✓ All data imported to files!');
-```
-
-## 📦 Backup & Restore
-
-### Manual Backup
-
-```bash
-# Just copy the config folder
-cp -r server/config server/config_backup_$(date +%Y%m%d)
-```
-
-### Programmatic Backup
-
-```javascript
-const { dbFileManager } = require('./config/dbFileManager');
-
-// Create timestamped backup
-const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-const backupPath = `./config/backup_${timestamp}.json`;
-dbFileManager.exportAll(backupPath);
-console.log(`Backup saved to: ${backupPath}`);
-```
-
-### Restore from Backup
-
-```javascript
-const { dbFileManager } = require('./config/dbFileManager');
-
-// Restore from specific backup
-dbFileManager.importAll('./config/backup_20250217.json');
-console.log('✓ Data restored from backup!');
-```
-
-## 🎛️ Environment Variables Reference
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `USE_FILE_DATABASE` | Enable file-based database | `false` |
-| `FILE_DATABASE_AUTO_SAVE` | Auto-save changes to files | `true` |
-| `FILE_DATABASE_BACKUP_PATH` | Default backup file path | `./config/backup_all_data.json` |
-
-## 🚀 Testing the System
-
-Run the interactive demo:
-
-```bash
-cd server
-node src/fileDatabaseDemo.js
-```
-
-This will:
-- ✅ Create sample data
-- ✅ Demonstrate all CRUD operations
-- ✅ Show query examples
-- ✅ Create a backup file
-- ✅ Display statistics
-
-## 📝 Sample Data Files
-
-### users.json
-
-```json
-[
-  {
-    "id": "user_001",
-    "name": "Admin User",
-    "email": "admin@contractfarming.com",
-    "password": "$2b$10$HashedPassword",
-    "role": "ADMIN",
-    "phone": "+919876543210",
-    "location": "Bangalore",
-    "createdAt": "2025-01-01T00:00:00Z"
-  },
-  {
-    "id": "user_002",
-    "name": "Farmer John",
-    "email": "john@farmer.com",
-    "password": "$2b$10$HashedPassword",
+curl -X POST http://localhost:5004/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Farmer",
+    "email": "farmer2@example.com",
+    "password": "password123",
     "role": "FARMER",
-    "phone": "+919876543211",
-    "location": "Bangalore",
-    "createdAt": "2025-01-01T00:00:00Z"
-  }
-]
+    "phone": "+91 9876543210",
+    "city": "Bangalore"
+  }'
 ```
 
-### contracts.json
+The new user will be immediately saved to `database.json`!
 
-```json
-[
-  {
-    "id": "contract_001",
-    "farmerId": "user_002",
-    "buyerId": "user_003",
-    "productId": "prod_001",
-    "quantity": 500,
-    "pricePerUnit": 2500,
-    "totalPrice": 1250000,
-    "unit": "kg",
-    "startDate": "2025-02-01",
-    "deliveryDate": "2025-03-01",
-    "location": "Bangalore",
-    "area": "Yeshwanthpur",
-    "status": "ACTIVE",
-    "createdAt": "2025-01-15T10:00:00Z"
-  }
-]
-```
+## Next Steps
 
-## ⚠️ Important Notes
-
-1. **Passwords**: Always hash passwords before storing (use bcrypt)
-2. **IDs**: Let the system auto-generate unique IDs
-3. **Timestamps**: `createdAt` and `updatedAt` are auto-managed
-4. **Validation**: Add your own validation before saving
-5. **Indexes**: For large datasets, consider adding search indexes
-
-## 🐛 Troubleshooting
-
-### Data not persisting
-- Check `USE_FILE_DATABASE=true` in `.env`
-- Verify file permissions in `config/` directory
-- Check `FILE_DATABASE_AUTO_SAVE=true`
-
-### Cannot find records
-- Ensure data files exist in `server/config/`
-- Check JSON syntax is valid
-- Run `node src/fileDatabaseDemo.js` to test
-
-### Performance issues with large files
-- Consider splitting into multiple smaller files
-- Use database for production with large datasets
-- Implement caching layer
-
-## 🎯 When to Use File Database
-
-✅ **Good for:**
-- Development and testing
-- Small-scale applications (< 10,000 records)
-- Prototyping and demos
-- Offline applications
-- Easy data portability
-
-❌ **Not ideal for:**
-- Large-scale production (> 100,000 records)
-- High-concurrency applications
-- Complex transactions
-- Real-time analytics
-
-## 📞 Support
-
-For issues or questions:
-1. Run the demo: `node src/fileDatabaseDemo.js`
-2. Check CONFIGURATION.md
-3. Review source code in `src/config/dbFileManager.js`
+1. ✅ Start the server: `npm run dev`
+2. ✅ Login with default admin account
+3. ✅ Create contracts, products, transactions
+4. ✅ Watch `database.json` update in real-time!
 
 ---
 
-**Last Updated**: February 17, 2025
+**Need Help?** Check the main README.md or contact the development team.
