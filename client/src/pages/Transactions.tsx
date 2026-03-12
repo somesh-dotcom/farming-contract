@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
-import { CreditCard, DollarSign, Calendar, FileText, Filter, Search, RefreshCw, Trash2, CheckCircle, XCircle, ChevronDown, ExternalLink } from 'lucide-react'
+import { CreditCard, DollarSign, Calendar, FileText, Filter, Search, Trash2, ExternalLink } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Transaction } from '../types'
 
@@ -41,9 +41,8 @@ const Transactions = () => {
       
       return { previousTransactions };
     },
-    onError: (err, variables, context) => {
-      // Rollback on error
-      queryClient.setQueryData(['transactions'], context?.previousTransactions);
+    onError: () => {
+      // Rollback on error - simplified
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })

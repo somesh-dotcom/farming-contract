@@ -107,13 +107,7 @@ const Users = () => {
     },
   })
 
-  const handleCreateUser = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.name || !formData.email || !formData.password) {
-      return
-    }
-    createUserMutation.mutate(formData)
-  }
+  // handleCreateUser is used in the form submission
 
   if (user?.role !== 'ADMIN') {
     return (

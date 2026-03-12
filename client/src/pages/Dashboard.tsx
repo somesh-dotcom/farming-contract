@@ -73,10 +73,6 @@ const Dashboard = () => {
     .slice(0, 5)
 
   // Calculate revenue trends
-  const totalRevenue = stats.totalContractValue
-  const monthlyAverage = totalRevenue > 0 && stats.totalContracts > 0 
-    ? totalRevenue / stats.totalContracts 
-    : 0
 
   const statCards = user?.role === 'ADMIN' 
     ? [

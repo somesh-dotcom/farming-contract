@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, User, UserCheck } from 'lucide-react';
+import { Eye, User, UserCheck } from 'lucide-react';
 
 const ViewAs = () => {
   const { user, impersonateUser, stopImpersonation } = useAuth();
