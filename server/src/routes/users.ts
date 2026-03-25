@@ -98,7 +98,7 @@ router.get('/stats/:userId', authenticate, async (req: AuthRequest, res) => {
     const { userId } = req.params;
 
     // Check permissions
-    if (req.userId !== userId && req.userRole !== UserRole.ADMIN) {
+    if (req.userRole !== UserRole.ADMIN && req.userId !== userId) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -107,7 +107,9 @@ router.get('/stats/:userId', authenticate, async (req: AuthRequest, res) => {
       select: {
         id: true,
         name: true,
-        role: true
+        role: true,
+        rating: true,
+        totalRatings: true
       }
     });
 
@@ -115,43 +117,103 @@ router.get('/stats/:userId', authenticate, async (req: AuthRequest, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const [contracts, transactions, totalContractValue, totalTransactionAmount] = await Promise.all([
-      prisma.contract.count({
-        where: user.role === UserRole.FARMER
-          ? { farmerId: userId }
-          : user.role === UserRole.BUYER
-          ? { buyerId: userId }
-          : {}
-      }),
-      prisma.transaction.count({
-        where: { userId }
-      }),
-      prisma.contract.aggregate({
-        where: user.role === UserRole.FARMER
-          ? { farmerId: userId }
-          : user.role === UserRole.BUYER
-          ? { buyerId: userId }
-          : {},
-        _sum: { totalValue: true }
-      }),
-      prisma.transaction.aggregate({
-        where: { userId, status: 'COMPLETED' },
-        _sum: { amount: true }
-      })
-    ]);
+    // Get contract statistics
+    const contractStats = await prisma.contract.groupBy({
+      by: ['status'],
+      where: {
+        OR: [
+          { farmerId: userId },
+          { buyerId: userId }
+        ]
+      },
+      _count: true
+    });
+
+    // Get transaction statistics
+    const transactionStats = await prisma.transaction.groupBy({
+      by: ['status'],
+      where: { userId },
+      _count: true
+    });
 
     res.json({
       user,
-      stats: {
-        totalContracts: contracts,
-        totalTransactions: transactions,
-        totalContractValue: totalContractValue._sum.totalValue || 0,
-        totalTransactionAmount: totalTransactionAmount._sum.amount || 0
-      }
+      contracts: contractStats,
+      transactions: transactionStats
     });
   } catch (error: any) {
     console.error('Get user stats error:', error);
     res.status(500).json({ message: 'Failed to fetch user statistics', error: error.message });
+  }
+});
+
+// Get user profile with ratings
+router.get('/:userId/profile', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        phone: true,
+        address: true,
+        city: true,
+        state: true,
+        pincode: true,
+        rating: true,
+        totalRatings: true,
+        createdAt: true,
+        ratingsReceived: {
+          include: {
+            rater: {
+              select: {
+                id: true,
+                name: true,
+                role: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 10 // Last 10 ratings
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Calculate rating distribution
+    const allRatings = await prisma.farmerRating.findMany({
+      where: { farmerId: userId },
+      select: { rating: true }
+    });
+
+    const distribution = {
+      5: allRatings.filter(r => r.rating === 5).length,
+      4: allRatings.filter(r => r.rating === 4).length,
+      3: allRatings.filter(r => r.rating === 3).length,
+      2: allRatings.filter(r => r.rating === 2).length,
+      1: allRatings.filter(r => r.rating === 1).length,
+    };
+
+    res.json({
+      user: {
+        ...user,
+        ratingsReceived: undefined,
+        averageRating: user.rating || 0,
+        totalRatings: user.totalRatings || 0
+      },
+      ratings: user.ratingsReceived,
+      distribution
+    });
+  } catch (error: any) {
+    console.error('Get user profile error:', error);
+    res.status(500).json({ message: 'Failed to fetch user profile', error: error.message });
   }
 });
 

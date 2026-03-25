@@ -8,6 +8,8 @@ import productRoutes from './routes/products';
 import marketPriceRoutes from './routes/marketPrices';
 import transactionRoutes from './routes/transactions';
 import userRoutes from './routes/users';
+import contractRequestRoutes from './routes/contractRequests';
+import ratingRoutes from './routes/ratings';
 import { startRealTimePriceUpdates } from './realtimePrices';
 
 dotenv.config();
@@ -35,6 +37,8 @@ app.use('/api/contracts', contractRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/market-prices', marketPriceRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/contract-requests', contractRequestRoutes);
+app.use('/api/ratings', ratingRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard'
 import Contracts from './pages/Contracts'
 import ContractDetail from './pages/ContractDetail'
 import CreateContract from './pages/CreateContract'
+import SendRequest from './pages/SendRequest'
+import ContractRequests from './pages/ContractRequests'
 import MarketPrices from './pages/MarketPrices'
 import Transactions from './pages/Transactions'
 import Profile from './pages/Profile'
@@ -33,6 +35,8 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="contracts" element={<Contracts />} />
             <Route path="contracts/new" element={<CreateContract />} />
+            <Route path="contracts/send-request" element={<SendRequest />} />
+            <Route path="contracts/requests" element={<ContractRequests />} />
             <Route path="contracts/:id" element={<ContractDetail />} />
             <Route path="market-prices" element={<MarketPrices />} />
             <Route path="transactions" element={<Transactions />} />

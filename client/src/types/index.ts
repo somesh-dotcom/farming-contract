@@ -3,6 +3,7 @@ export type ContractStatus = 'DRAFT' | 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CAN
 export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'FAILED'
 export type PaymentType = 'ADVANCE' | 'PARTIAL' | 'FINAL' | 'REFUND' | 'OTHER'
 export type ProductCategory = 'GRAINS' | 'VEGETABLES' | 'FRUITS' | 'SPICES' | 'PULSES' | 'OTHERS'
+export type ContractRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED'
 
 export interface User {
   id: string
@@ -14,8 +15,21 @@ export interface User {
   city?: string
   state?: string
   pincode?: string
+  rating?: number
+  totalRatings?: number
   createdAt: string
   originalRole?: UserRole | null
+}
+
+export interface FarmerRating {
+  id: string
+  farmerId: string
+  raterId: string
+  rating: number
+  comment?: string
+  createdAt: string
+  updatedAt: string
+  rater?: User
 }
 
 export interface Product {
@@ -70,7 +84,30 @@ export interface Transaction {
   paymentType?: PaymentType
   transactionDate: string
   createdAt: string
+  updatedAt: string
   contract?: Contract
   user?: User
+}
+
+export interface ContractRequest {
+  id: string
+  buyerId: string
+  farmerId: string
+  productId: string
+  quantity: number
+  unit: string
+  proposedPrice: number
+  startDate: string
+  deliveryDate: string
+  location?: string
+  area?: string
+  terms?: string
+  status: ContractRequestStatus
+  createdAt: string
+  updatedAt: string
+  buyer?: User
+  farmer?: User
+  product?: Product
+  contract?: Contract | null
 }
 

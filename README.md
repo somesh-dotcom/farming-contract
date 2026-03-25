@@ -7,6 +7,8 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 ### Core Functionality
 - **Multi-role User Management**: Role-based authentication (Farmer, Buyer, Admin)
 - **Smart Contract Management**: Create, negotiate, and track agricultural contracts
+- **Contract Request System**: Buyers can send requests to farmers, farmers can accept/reject
+- **5-Star Rating & Feedback**: Buyers can rate farmers after contract completion
 - **Real-time Market Price Tracking**: Live price feeds and historical trend analysis
 - **Integrated Payment System**: Transaction management and payment tracking
 - **Analytics Dashboard**: Comprehensive statistics and business insights
@@ -31,6 +33,8 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - ✅ **Complete Transaction Visibility**: Buyers can see all transactions related to their contracts
 - ✅ **Secure Status Management**: Only admins can change completed contract statuses
 - ✅ **Flexible Storage Options**: PostgreSQL for production or JSON file storage for development/testing
+- ✅ **Two-Way Contract Creation**: Farmers create direct contracts, buyers send requests
+- ✅ **Verified Rating System**: Only buyers with completed contracts can rate farmers
 
 ## 🛠️ Tech Stack
 
@@ -58,11 +62,13 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - **React-i18next** for multilingual support (English/Kannada)
 
 ### Database Schema
-- **User**: Farmers, Buyers, and Admin accounts with role-based access
+- **User**: Farmers, Buyers, and Admin accounts with role-based access, ratings, and profiles
 - **Product**: Agricultural commodities with categorization
 - **Contract**: Structured agreements with lifecycle management
 - **MarketPrice**: Real-time pricing with geographic variations
 - **Transaction**: Payment tracking with multiple payment methods
+- **ContractRequest**: Buyer-initiated requests awaiting farmer approval
+- **FarmerRating**: 5-star ratings and feedback from buyers
 
 ## 📁 Project Structure
 
@@ -74,7 +80,8 @@ agricultural-commodity-platform/
 │   │   │   ├── Header.tsx
 │   │   │   ├── Layout.tsx
 │   │   │   ├── PrivateRoute.tsx
-│   │   │   └── Sidebar.tsx
+│   │   │   ├── Sidebar.tsx
+│   │   │   └── ... more components
 │   │   ├── contexts/          # React Context providers
 │   │   │   └── AuthContext.tsx
 │   │   ├── pages/             # Page components
@@ -86,8 +93,10 @@ agricultural-commodity-platform/
 │   │   │   ├── MarketPrices.tsx
 │   │   │   ├── Profile.tsx
 │   │   │   ├── Register.tsx
+│   │   │   ├── SendRequest.tsx         # Buyer contract request page
 │   │   │   ├── Transactions.tsx
-│   │   │   └── Users.tsx
+│   │   │   ├── Users.tsx
+│   │   │   └── ContractRequests.tsx    # Farmer request management
 │   │   ├── types/             # TypeScript type definitions
 │   │   │   └── index.ts
 │   │   ├── utils/             # JavaScript utility modules
@@ -96,6 +105,7 @@ agricultural-commodity-platform/
 │   │   │   ├── contractUtils.js
 │   │   │   ├── dataAnalytics.js
 │   │   │   ├── dateUtils.js
+│   │   │   ├── i18n.ts
 │   │   │   ├── index.js
 │   │   │   ├── jsUtils.js
 │   │   │   ├── localization.js
@@ -114,8 +124,10 @@ agricultural-commodity-platform/
 │   │   ├── routes/            # API route handlers
 │   │   │   ├── auth.ts
 │   │   │   ├── contracts.ts
+│   │   │   ├── contractRequests.ts     # Contract request endpoints
 │   │   │   ├── marketPrices.ts
 │   │   │   ├── products.ts
+│   │   │   ├── ratings.ts              # Rating system endpoints
 │   │   │   ├── transactions.ts
 │   │   │   └── users.ts
 │   │   ├── middleware/        # Express middleware
@@ -135,8 +147,7 @@ agricultural-commodity-platform/
 ├── package.json               # Root package configuration
 ├── run.sh                     # Setup and execution script
 ├── README.md                  # Project documentation
-├── QUICK_START.md             # Quick setup guide
-└── PROJECT_CHANGES_SUMMARY.md # Summary of all project changes and enhancements
+└── QUICK_START.md             # Quick setup guide
 ```
 
 **Empowering farmers and buyers with transparent, efficient agricultural trade**
@@ -336,20 +347,24 @@ npm run dev
 ### 3. Managing Contracts
 
 - **Farmers** can:
-  - Create new contracts
+  - Create new contracts (direct contracts with buyers)
+  - View incoming contract requests from buyers
+  - Accept or reject buyer requests
   - View all their contracts
   - Update contract status (Draft → Pending → Active → Completed)
   - Negotiate terms with buyers
 
 - **Buyers** can:
+  - Send contract requests to farmers (awaiting farmer approval)
   - View contracts offered to them
   - Approve/reject pending contracts
   - Track active contracts
   - View all transactions related to their contracts
   - Initiate payments
+  - Rate farmers after contract completion
 
 - **Admins** can:
-  - View all contracts
+  - View all contracts and requests
   - Manage users
   - Add/update market prices
   - Toggle transaction statuses (Pending ↔ Complete)
@@ -357,6 +372,7 @@ npm run dev
   - Manage Bangalore-specific location assignments
   - Change contract statuses in both directions (PENDING ↔ COMPLETED)
   - Override automated contract completion status when needed
+  - Accept/reject contract requests on behalf of farmers
 
 ### 4. Market Prices
 
@@ -387,10 +403,24 @@ npm run dev
 ### Contracts
 - `GET /api/contracts` - Get all contracts (filtered by role)
 - `GET /api/contracts/:id` - Get contract details
-- `POST /api/contracts` - Create new contract
+- `POST /api/contracts` - Create new contract (Farmer only)
 - `PUT /api/contracts/:id` - Update contract
 - `PATCH /api/contracts/:id/status` - Update contract status (only admins can change COMPLETED contracts to other statuses)
 - `GET /api/contracts/user/:userId` - Get contracts for specific user
+
+### Contract Requests
+- `GET /api/contract-requests` - Get all contract requests (filtered by role)
+- `GET /api/contract-requests/:id` - Get single request details
+- `POST /api/contract-requests` - Create new request (Buyer only)
+- `PATCH /api/contract-requests/:id/accept` - Accept request (Farmer/Admin - creates contract)
+- `PATCH /api/contract-requests/:id/reject` - Reject request (Farmer/Admin)
+- `PATCH /api/contract-requests/:id/cancel` - Cancel request (Buyer only)
+
+### Ratings
+- `GET /api/ratings/farmer/:farmerId` - Get farmer's ratings and average
+- `POST /api/ratings` - Create rating for farmer (Buyer with completed contract)
+- `PUT /api/ratings/:id` - Update own rating
+- `DELETE /api/ratings/:id` - Delete rating (Admin or owner)
 
 ### Market Prices
 - `GET /api/market-prices` - Get market prices
@@ -482,6 +512,7 @@ For detailed information, see [`FILE_DATABASE_GUIDE.md`](server/FILE_DATABASE_GU
 - **TransactionStatus**: `PENDING`, `COMPLETED`, `FAILED`
 - **PaymentType**: `ADVANCE`, `PARTIAL`, `FINAL`, `REFUND`, `OTHER`
 - **ProductCategory**: `GRAINS`, `VEGETABLES`, `FRUITS`, `SPICES`, `PULSES`, `OTHERS`
+- **ContractRequestStatus**: `PENDING`, `ACCEPTED`, `REJECTED`, `CANCELLED`
 
 ### Contract Status Flow
 

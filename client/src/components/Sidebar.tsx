@@ -8,6 +8,8 @@ import {
   User,
   PlusCircle,
   Users,
+  Send,
+  Inbox,
 } from 'lucide-react'
 
 const Sidebar = () => {
@@ -17,7 +19,13 @@ const Sidebar = () => {
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/contracts', icon: FileText, label: 'Contracts' },
     ...(user?.role === 'FARMER'
-      ? [{ path: '/contracts/new', icon: PlusCircle, label: 'Create Contract' }]
+      ? [
+          { path: '/contracts/new', icon: PlusCircle, label: 'Create Contract' },
+          { path: '/contracts/requests', icon: Inbox, label: 'Contract Requests' }
+        ]
+      : []),
+    ...(user?.role === 'BUYER'
+      ? [{ path: '/contracts/send-request', icon: Send, label: 'Send Request' }]
       : []),
     { path: '/market-prices', icon: TrendingUp, label: 'Market Prices' },
     { path: '/transactions', icon: CreditCard, label: 'Transactions' },

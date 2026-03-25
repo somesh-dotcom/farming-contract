@@ -29,6 +29,8 @@ model User {
   transactions                                   Transaction[]
   ratingsAsRater                                 FarmerRating[]  @relation("RatingsGiven")
   ratingsReceived                                FarmerRating[]  @relation("RatingsReceived")
+  buyerRequests                                  ContractRequest[] @relation("BuyerRequests")
+  farmerRequests                                 ContractRequest[] @relation("FarmerRequests")
 
   @@map("users")
 }
@@ -43,6 +45,7 @@ model Product {
   updatedAt   DateTime        @updatedAt
   contracts   Contract[]
   prices      MarketPrice[]
+  requests    ContractRequest[]
 
   @@map("products")
 }
@@ -68,6 +71,7 @@ model Contract {
   product       Product         @relation(fields: [productId], references: [id])
   notifications notifications[]
   transactions  Transaction[]
+  requests      ContractRequest[]
 
   @@index([farmerId])
   @@index([buyerId])
@@ -149,6 +153,34 @@ model FarmerRating {
   @@map("farmer_ratings")
 }
 
+model ContractRequest {
+  id            String              @id @default(uuid())
+  buyerId       String
+  farmerId      String
+  productId     String
+  quantity      Float
+  unit          String
+  proposedPrice Float
+  startDate     DateTime
+  deliveryDate  DateTime
+  location      String?
+  area          String?
+  terms         String?
+  status        ContractRequestStatus @default(PENDING)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  buyer         User                @relation("BuyerRequests", fields: [buyerId], references: [id])
+  farmer        User                @relation("FarmerRequests", fields: [farmerId], references: [id])
+  product       Product             @relation(fields: [productId], references: [id])
+  contract      Contract?           @relation(fields: [contractId], references: [id])
+  contractId    String?             @unique
+
+  @@index([buyerId])
+  @@index([farmerId])
+  @@index([status])
+  @@map("contract_requests")
+}
+
 enum UserRole {
   FARMER
   BUYER
@@ -202,4 +234,14 @@ enum NotificationType {
   CONTRACT_COMPLETED
   SYSTEM_ALERT
   FARMER_RATED
+  CONTRACT_REQUESTED
+  CONTRACT_REQUEST_ACCEPTED
+  CONTRACT_REQUEST_REJECTED
+}
+
+enum ContractRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
 }
