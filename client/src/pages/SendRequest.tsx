@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -102,7 +102,7 @@ const AreaPriceComparison = ({ productId }: { productId: string }) => {
 };
 
 const SendRequest = () => {
-  const { user, token } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { t } = useTranslation()
@@ -146,15 +146,50 @@ const SendRequest = () => {
 
   const createRequestMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await axios.post('/api/contract-requests', data)
-      return res.data
+      console.log('[SendRequest] Sending contract request data:', data);
+      try {
+        const res = await axios.post('/api/contract-requests', data)
+        console.log('[SendRequest] Response:', res.data);
+        return res.data
+      } catch (error: any) {
+        console.error('[SendRequest] API Error:', error);
+        console.error('[SendRequest] Error response:', error.response?.data);
+        throw error;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['contractRequests'] })
-      navigate('/contracts')
+      // Show success message with better visibility
+      const successMessage = data.message || 'Contract request sent successfully! The farmer will review your request.';
+      
+      // Use browser alert (guaranteed to show)
+      alert(successMessage);
+      
+      // Also show a temporary in-page success message
+      const successDiv = document.createElement('div');
+      successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50';
+      successDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="✓ Check"></path>
+            <span>${successMessage}</span>
+          </svg>
+        </div>
+      `;
+      document.body.appendChild(successDiv);
+      setTimeout(() => successDiv.remove(), 5000);
+      
+      // Navigate after a short delay to let user see the message
+      setTimeout(() => navigate('/contracts'), 100);
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || t('contract.failedToCreateRequest'))
+      console.error('Contract request error:', err)
+      const errorMessage = err.response?.data?.message || 'Failed to create contract request';
+      console.error('[SendRequest] Error message:', errorMessage);
+      console.error('[SendRequest] Full error response:', err.response?.data);
+      setError(errorMessage)
+      // Scroll to top to show error
+      window.scrollTo(0, 0)
     },
   })
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { format } from 'date-fns'
-import { PlusCircle, Eye, Calendar, Package, DollarSign } from 'lucide-react'
+import { PlusCircle, Eye, Calendar, Package, DollarSign, FileText } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Contract } from '../types'
 
@@ -56,15 +56,26 @@ const Contracts = () => {
           <h1 className="text-3xl font-bold text-gray-900">{t('navigation.contracts')}</h1>
           <p className="text-gray-600 mt-1">{t('contract.manage')} {t('contract.farming')}</p>
         </div>
-        {user?.role === 'FARMER' && (
-          <button
-            onClick={() => navigate('/contracts/new')}
-            className="btn btn-primary flex items-center gap-2"
-          >
-            <PlusCircle className="w-5 h-5" />
-            {t('contract.createContract')}
-          </button>
-        )}
+        <div className="flex gap-2">
+          {user?.role === 'BUYER' && (
+            <button
+              onClick={() => navigate('/contracts/my-requests')}
+              className="btn btn-secondary flex items-center gap-2"
+            >
+              <FileText className="w-5 h-5" />
+              My Requests
+            </button>
+          )}
+          {user?.role === 'FARMER' && (
+            <button
+              onClick={() => navigate('/contracts/new')}
+              className="btn btn-primary flex items-center gap-2"
+            >
+              <PlusCircle className="w-5 h-5" />
+              {t('contract.createContract')}
+            </button>
+          )}
+        </div>
       </div>
 
       {myContracts.length === 0 ? (

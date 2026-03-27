@@ -1,87 +1,39 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { CheckCircle, XCircle, Clock, Send, FileText } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, Send, FileText, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
-const ContractRequests = () => {
+const BuyerRequests = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const { t } = useTranslation()
+  const [filter, setFilter] = useState<'all' | 'pending' | 'accepted' | 'rejected'>('all')
 
-  const [filter, setFilter] = useState<'all' | 'pending' | 'accepted' | 'rejected'>('pending')
-
-  // Fetch contract requests
+  // Fetch contract requests sent by this buyer
   const { data: requestsData, isLoading, refetch } = useQuery({
-    queryKey: ['contractRequests'],
+    queryKey: ['buyerContractRequests'],
     queryFn: async () => {
       try {
-        console.log('[ContractRequests] Fetching requests for farmer:', user?.id);
+        console.log('[BuyerRequests] Fetching requests for buyer:', user?.id);
         const res = await axios.get('/api/contract-requests', {
           params: { status: filter === 'all' ? undefined : filter.toUpperCase() }
         })
-        console.log('[ContractRequests] Received requests:', res.data.requests?.length || 0);
+        console.log('[BuyerRequests] Received requests:', res.data.requests?.length || 0);
         return res.data.requests || []
       } catch (error: any) {
-        console.error('Error fetching contract requests:', error)
+        console.error('Error fetching buyer contract requests:', error)
         throw error
       }
     },
-    enabled: !!user?.id && user?.role === 'FARMER',
+    enabled: !!user?.id && user?.role === 'BUYER',
   })
 
-  // Accept request mutation
-  const acceptRequestMutation = useMutation({
-    mutationFn: async (requestId: string) => {
-      const res = await axios.patch(`/api/contract-requests/${requestId}/accept`)
-      return res.data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contractRequests'] })
-      queryClient.invalidateQueries({ queryKey: ['contracts'] })
-      alert('Contract request accepted successfully!')
-    },
-    onError: (err: any) => {
-      console.error('Accept request error:', err)
-      alert(err.response?.data?.message || 'Failed to accept request')
-    },
-  })
-
-  // Reject request mutation
-  const rejectRequestMutation = useMutation({
-    mutationFn: async ({ requestId, reason }: { requestId: string; reason?: string }) => {
-      const res = await axios.patch(`/api/contract-requests/${requestId}/reject`, { reason })
-      return res.data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contractRequests'] })
-      alert('Contract request rejected')
-    },
-    onError: (err: any) => {
-      console.error('Reject request error:', err)
-      alert(err.response?.data?.message || 'Failed to reject request')
-    },
-  })
-
-  const handleAccept = (requestId: string) => {
-    if (window.confirm('Are you sure you want to accept this request? This will create a contract.')) {
-      acceptRequestMutation.mutate(requestId)
-    }
-  }
-
-  const handleReject = (requestId: string) => {
-    const reason = prompt('Enter reason for rejection (optional):')
-    rejectRequestMutation.mutate({ requestId, reason: reason || undefined })
-  }
-
-  // Only farmers can view incoming requests
-  if (user?.role !== 'FARMER') {
+  // Only buyers can view their sent requests
+  if (user?.role !== 'BUYER') {
     return (
       <div className="card text-center py-12">
-        <p className="text-gray-600">Only farmers can view incoming contract requests</p>
+        <p className="text-gray-600">Only buyers can view their contract requests</p>
       </div>
     )
   }
@@ -115,14 +67,20 @@ const ContractRequests = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={() => navigate('/contracts')}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('contract.contractRequests')}</h1>
-          <p className="text-gray-600 mt-1">{t('contract.manageIncomingRequests')}</p>
+          <h1 className="text-3xl font-bold text-gray-900">My Contract Requests</h1>
+          <p className="text-gray-600 mt-1">Track requests sent to farmers</p>
         </div>
         <button
           onClick={() => refetch()}
-          className="btn btn-secondary flex items-center gap-2"
+          className="btn btn-secondary flex items-center gap-2 ml-auto"
         >
           <Clock className="w-4 h-4" />
           Refresh
@@ -210,8 +168,14 @@ const ContractRequests = () => {
           <Send className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-600">No contract requests found</p>
           <p className="text-sm text-gray-500 mt-2">
-            Requests from buyers will appear here
+            Requests you send to farmers will appear here
           </p>
+          <button
+            onClick={() => navigate('/contracts/send-request')}
+            className="btn btn-primary mt-4"
+          >
+            Send New Request
+          </button>
         </div>
       )}
 
@@ -229,6 +193,11 @@ const ContractRequests = () => {
                   <div className="flex items-center gap-2 mb-3">
                     {getStatusIcon(request.status)}
                     <span className="font-semibold">{request.status}</span>
+                    {request.status === 'REJECTED' && request.rejectionReason && (
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
+                        Reason Provided
+                      </span>
+                    )}
                     {request.contract && (
                       <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
                         Contract Created
@@ -238,15 +207,15 @@ const ContractRequests = () => {
 
                   {/* Request Details Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    {/* Buyer Info */}
+                    {/* Farmer Info */}
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Buyer</p>
-                      <p className="font-medium text-gray-900">{request.buyer?.name}</p>
-                      {request.buyer?.phone && (
-                        <p className="text-sm text-gray-600">{request.buyer.phone}</p>
+                      <p className="text-sm text-gray-600 mb-1">Farmer</p>
+                      <p className="font-medium text-gray-900">{request.farmer?.name}</p>
+                      {request.farmer?.phone && (
+                        <p className="text-sm text-gray-600">{request.farmer.phone}</p>
                       )}
-                      {request.buyer?.city && (
-                        <p className="text-sm text-gray-600">{request.buyer.city}</p>
+                      {request.farmer?.city && (
+                        <p className="text-sm text-gray-600">{request.farmer.city}</p>
                       )}
                     </div>
 
@@ -303,6 +272,21 @@ const ContractRequests = () => {
                     </div>
                   )}
 
+                  {/* Rejection Reason (if rejected) */}
+                  {request.status === 'REJECTED' && request.rejectionReason && (
+                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-semibold text-red-800 mb-1">
+                            Reason for Rejection:
+                          </p>
+                          <p className="text-red-700">{request.rejectionReason}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Metadata */}
                   <div className="text-xs text-gray-500">
                     <p>Requested on: {new Date(request.createdAt).toLocaleString()}</p>
@@ -311,28 +295,6 @@ const ContractRequests = () => {
                     )}
                   </div>
                 </div>
-
-                {/* Action Buttons */}
-                {request.status === 'PENDING' && (
-                  <div className="flex flex-col gap-2 ml-4">
-                    <button
-                      onClick={() => handleAccept(request.id)}
-                      disabled={acceptRequestMutation.isPending}
-                      className="btn btn-success flex items-center gap-2 whitespace-nowrap"
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                      {acceptRequestMutation.isPending ? 'Processing...' : 'Accept'}
-                    </button>
-                    <button
-                      onClick={() => handleReject(request.id)}
-                      disabled={rejectRequestMutation.isPending}
-                      className="btn btn-danger flex items-center gap-2 whitespace-nowrap"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      {rejectRequestMutation.isPending ? 'Processing...' : 'Reject'}
-                    </button>
-                  </div>
-                )}
 
                 {/* View Contract Button (if accepted) */}
                 {request.status === 'ACCEPTED' && request.contract && (
@@ -355,4 +317,4 @@ const ContractRequests = () => {
   )
 }
 
-export default ContractRequests
+export default BuyerRequests

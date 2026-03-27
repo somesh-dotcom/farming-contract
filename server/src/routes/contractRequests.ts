@@ -11,15 +11,20 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
     const { status, buyerId, farmerId } = req.query;
     const filters: any = {};
 
-    // Apply filters based on user role
+    // Apply filters based on user role - users can only see their own requests
     if (req.userRole === UserRole.BUYER) {
+      // Buyers see only requests they sent
       filters.buyerId = req.userId;
+      console.log(`[Buyer Request] Fetching requests for buyer ID: ${req.userId}`);
     } else if (req.userRole === UserRole.FARMER) {
+      // Farmers see only requests sent to them
       filters.farmerId = req.userId;
+      console.log(`[Farmer Request] Fetching requests for farmer ID: ${req.userId}`);
     } else if (req.userRole === UserRole.ADMIN) {
       // Admins can see all requests
       if (buyerId) filters.buyerId = buyerId;
       if (farmerId) filters.farmerId = farmerId;
+      console.log(`[Admin Request] Fetching all requests with filters:`, filters);
     }
 
     if (status) filters.status = status;
@@ -150,13 +155,36 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
 
     // Validation
     if (!farmerId || !productId || !quantity || !unit || !proposedPrice || !startDate || !deliveryDate) {
+      console.error('[ContractRequest] Missing required fields:', { 
+        farmerId, 
+        productId, 
+        quantity, 
+        unit, 
+        proposedPrice, 
+        startDate, 
+        deliveryDate 
+      });
       return res.status(400).json({ message: 'All required fields must be provided' });
     }
 
     // Only buyers can create contract requests
     if (req.userRole !== UserRole.BUYER) {
+      console.error('[ContractRequest] User is not a buyer. Role:', req.userRole);
       return res.status(403).json({ message: 'Only buyers can create contract requests' });
     }
+
+    console.log('[ContractRequest] Creating request with data:', {
+      buyerId: req.userId,
+      farmerId,
+      productId,
+      quantity,
+      unit,
+      proposedPrice,
+      startDate,
+      deliveryDate,
+      location,
+      area
+    });
 
     // Verify product exists
     const product = await prisma.product.findUnique({
@@ -164,20 +192,30 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     });
 
     if (!product) {
+      console.error('[ContractRequest] Product not found:', productId);
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Verify farmer exists
+    // Verify farmer exists and is actually a farmer
     const farmer = await prisma.user.findUnique({
       where: { id: farmerId, role: UserRole.FARMER }
     });
 
     if (!farmer) {
-      return res.status(404).json({ message: 'Farmer not found' });
+      console.error('[ContractRequest] Farmer not found or not a farmer role:', farmerId);
+      return res.status(404).json({ message: 'Farmer not found or invalid role' });
     }
+
+    // Get buyer name for notification
+    const buyer = await prisma.user.findUnique({
+      where: { id: req.userId! },
+      select: { name: true }
+    });
 
     const totalValue = quantity * proposedPrice;
 
+    console.log('[ContractRequest] Creating contract request in database...');
+    
     const request = await prisma.contractRequest.create({
       data: {
         buyerId: req.userId!,
@@ -214,16 +252,18 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       }
     });
 
+    console.log('[ContractRequest] Contract request created successfully:', request.id);
+
     // Create notification for farmer
     await prisma.notifications.create({
       data: {
         type: 'CONTRACT_REQUESTED',
         title: 'New Contract Request',
-        message: `You have received a new contract request from ${req.user?.name} for ${product.name}`,
+        message: `You have received a new contract request from ${buyer?.name || 'a buyer'} for ${product.name}`,
         recipientId: farmerId,
-        senderId: req.userId,
+        senderId: req.userId!,
         metadata: JSON.stringify({ requestId: request.id })
-      }
+      } as any
     });
 
     res.status(201).json({ 
@@ -231,8 +271,27 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       request 
     });
   } catch (error: any) {
-    console.error('Create contract request error:', error);
-    res.status(500).json({ message: 'Failed to create contract request', error: error.message });
+    console.error('[ContractRequest] CREATE ERROR:', error);
+    console.error('[ContractRequest] Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
+    
+    // Handle Prisma errors
+    if (error.code === 'P2002') {
+      return res.status(400).json({ message: 'A similar request already exists' });
+    }
+    if (error.code === 'P2003') {
+      return res.status(400).json({ message: 'Invalid reference data' });
+    }
+    
+    res.status(500).json({ 
+      message: 'Failed to create contract request', 
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
@@ -334,7 +393,7 @@ router.patch('/:id/accept', authenticate, async (req: AuthRequest, res) => {
         recipientId: request.buyerId,
         senderId: request.farmerId,
         metadata: JSON.stringify({ requestId: request.id, contractId: contract.id })
-      }
+      } as any
     });
 
     res.json({ 
@@ -374,7 +433,8 @@ router.patch('/:id/reject', authenticate, async (req: AuthRequest, res) => {
     const updatedRequest = await prisma.contractRequest.update({
       where: { id: requestId },
       data: {
-        status: ContractRequestStatus.REJECTED
+        status: ContractRequestStatus.REJECTED,
+        rejectionReason: reason || null
       },
       include: {
         buyer: {
@@ -404,7 +464,7 @@ router.patch('/:id/reject', authenticate, async (req: AuthRequest, res) => {
         recipientId: request.buyerId,
         senderId: request.farmerId,
         metadata: JSON.stringify({ requestId: request.id, reason })
-      }
+      } as any
     });
 
     res.json({ message: 'Contract request rejected', request: updatedRequest });
