@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
-import { User, Mail, Phone, MapPin, Calendar, Home } from 'lucide-react'
+import { User, Mail, Phone, MapPin, Calendar, Home, Star } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { format } from 'date-fns'
 
@@ -37,6 +37,43 @@ const Profile = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="card">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('common.personalInformation')}</h2>
+            
+            {/* Rating Display */}
+            {user?.rating && user.rating > 0 && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">User Rating</p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-bold text-gray-900">{user.rating.toFixed(1)}</span>
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-6 h-6 ${
+                              star <= Math.round(user.rating || 0)
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    {user.totalRatings && user.totalRatings > 0 && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        Based on {user.totalRatings} {user.totalRatings === 1 ? 'review' : 'reviews'}
+                      </p>
+                    )}
+                  </div>
+                  <div className="hidden sm:block">
+                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
+                      <Star className="w-8 h-8 text-yellow-500 fill-yellow-500" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="space-y-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
