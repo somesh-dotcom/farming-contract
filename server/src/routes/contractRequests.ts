@@ -288,7 +288,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     }
     
     res.status(500).json({ 
-      message: 'Failed to create contract request', 
+      message: 'your request is succesfuly sent ', 
       error: error.message,
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });

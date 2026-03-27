@@ -146,6 +146,10 @@ export const getLocalizedText = (key, lang = 'en', fallback = {}) => {
       'transaction.confirmDelete': 'Are you sure you want to delete this transaction?',
       'transaction.delete': 'Delete',
       
+      // Contract request messages
+      'contract.failedToCreateRequest': 'Failed to create contract request',
+      'contract.requestSentSuccessfully': 'Contract request sent successfully! The farmer will review your request.',
+      
       // Common messages
       'common.loading': 'Loading...',
       'common.error': 'Error occurred',
@@ -296,6 +300,10 @@ export const getLocalizedText = (key, lang = 'en', fallback = {}) => {
       'transaction.pendingPayment': 'ಬಾಕಿ ಪಾವತಿ',
       'transaction.confirmDelete': 'ಈ ವಹಿವಾಟನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತಪಡಿಸುತ್ತೀರಾ?',
       'transaction.delete': 'ಅಳಿಸಿ',
+      
+      // Contract request messages
+      'contract.failedToCreateRequest': 'ಒಪ್ಪಂದ ಮನವಿಯನ್ನು ರಚಿಸಲು ವಿಫಲಗೊಂಡಿದೆ',
+      'contract.requestSentSuccessfully': 'ಒಪ್ಪಂದ ಮನವಿ ಕಳುಹಿಸಲಾಗಿದೆ! ರೈತರು ನಿಮ್ಮ ಮನವಿಯನ್ನು ಪರಿಶೀಲಿಸುವರು.',
       
       // Common messages
       'common.loading': 'ಲೋಡ್ ಆಗುತ್ತಿದೆ...',

@@ -135,6 +135,12 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       }
     });
     
+    // Get rater name for notification
+    const rater = await prisma.user.findUnique({
+      where: { id: req.userId! },
+      select: { name: true }
+    });
+    
     // Update farmer's overall rating
     const allRatings = await prisma.farmerRating.findMany({
       where: { farmerId }
@@ -155,11 +161,11 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       data: {
         type: 'FARMER_RATED',
         title: 'New Rating Received',
-        message: `You received a ${rating}-star rating from ${req.user?.name}${comment ? ': ' + comment : ''}`,
+        message: `You received a ${rating}-star rating from ${rater?.name || 'a buyer'}${comment ? ': ' + comment : ''}`,
         recipientId: farmerId,
-        senderId: req.userId,
+        senderId: req.userId!,
         metadata: JSON.stringify({ ratingId: newRating.id, contractId })
-      }
+      } as any
     });
     
     res.status(201).json({ 

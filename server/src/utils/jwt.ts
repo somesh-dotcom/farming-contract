@@ -8,7 +8,7 @@ export const generateToken = (userId: string, role: UserRole): string => {
   return jwt.sign(
     { userId, role },
     JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN }
+    { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions
   );
 };
 
