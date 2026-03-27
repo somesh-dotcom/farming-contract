@@ -29,24 +29,20 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Image */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-primary-600 to-primary-800">
-        <div className="absolute inset-0 bg-black opacity-40"></div>
+    <div className="min-h-screen relative flex items-center justify-center">
+      {/* Full Screen Background Image */}
+      <div className="absolute inset-0 z-0">
         <img 
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt2BCBA4pGOULO6vvQ9mb3qiM-kPIM4LwDwBvMYD3t0NBTtp_MewTs3UXF&s=10"
           alt="Agricultural farming landscape" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-12">
-          <h1 className="text-5xl font-bold mb-6">Welcome to Agricultural Trading Platform</h1>
-          <p className="text-xl text-center max-w-lg">Connect directly with farmers, ensure fair prices, and build trusted partnerships for quality agricultural products.</p>
-        </div>
+        <div className="absolute inset-0 bg-black opacity-50"></div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-primary-50 to-primary-100">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+      {/* Login Form - Centered Over Image */}
+      <div className="relative z-10 w-full max-w-md p-4">
+        <div className="bg-white rounded-xl shadow-2xl p-8 backdrop-blur-sm bg-white/95">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
               <LogIn className="w-8 h-8 text-primary-600" />
