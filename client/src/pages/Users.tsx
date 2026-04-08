@@ -89,9 +89,17 @@ const Users = () => {
       const res = await axios.delete(`/api/users/${userId}`)
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       queryClient.invalidateQueries({ queryKey: ['buyers'] })
+      
+      // Show success message
+      alert(`✅ ${data.message}`);
+    },
+    onError: (error: any) => {
+      console.error('Delete user error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to delete user';
+      alert(`❌ Error: ${errorMessage}`);
     },
   })
 
@@ -247,12 +255,17 @@ const Users = () => {
                         </button>
                         <button
                           onClick={() => {
-                            if (window.confirm(`Are you sure you want to delete user ${u.name}?`)) {
-                              deleteUserMutation.mutate(u.id)
+                            const confirmMessage = `⚠️ PERMANENT DELETE WARNING\n\nAre you sure you want to permanently delete user: ${u.name} (${u.email})?\n\nThis will delete:\n- User account\n- All contracts\n- All transactions\n- All ratings\n- All notifications\n- All contract requests\n\nThis action CANNOT be undone!`;
+                            
+                            if (window.confirm(confirmMessage)) {
+                              const secondConfirm = window.confirm(`FINAL CONFIRMATION\n\nYou are about to PERMANENTLY delete ${u.name} and ALL their data.\n\nClick OK to proceed with deletion.`);
+                              if (secondConfirm) {
+                                deleteUserMutation.mutate(u.id);
+                              }
                             }
                           }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete user"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Permanently delete user and all data"
                           disabled={deleteUserMutation.isPending}
                         >
                           <Trash2 className="w-4 h-4" />

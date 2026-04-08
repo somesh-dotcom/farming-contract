@@ -33,7 +33,7 @@ const Login = () => {
       {/* Full Screen Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt2BCBA4pGOULO6vvQ9mb3qiM-kPIM4LwDwBvMYD3t0NBTtp_MewTs3UXF&s=10"
+          src="https://media.licdn.com/dms/image/v2/D4D12AQE3m6wc7HWL7Q/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1688803468436?e=1777507200&v=beta&t=bAQV2osQz--MM77bDg71KWTsdURHnA4ZPLVvD5qxE9A"
           alt="Agricultural farming landscape" 
           className="w-full h-full object-cover"
         />
@@ -42,24 +42,24 @@ const Login = () => {
 
       {/* Login Form - Centered Over Image */}
       <div className="relative z-10 w-full max-w-md p-4">
-        <div className="bg-white rounded-xl shadow-2xl p-8 backdrop-blur-sm bg-white/95">
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-              <LogIn className="w-8 h-8 text-primary-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4">
+              <LogIn className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('auth.loginTitle')}</h1>
-            <p className="text-gray-600 mt-2">{t('auth.loginSubtitle')}</p>
+            <h1 className="text-3xl font-bold text-white drop-shadow-lg">{t('auth.loginTitle')}</h1>
+            <p className="text-white/90 mt-2 drop-shadow">{t('auth.loginSubtitle')}</p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            <div className="mb-4 p-3 bg-red-500/20 backdrop-blur-sm border border-red-400/30 text-white rounded-lg">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2">
                 {t('auth.email')}
               </label>
               <input
@@ -67,14 +67,14 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="input"
+                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
                 required
                 placeholder={t('auth.enterEmail')}
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2">
                 {t('auth.password')}
               </label>
               <input
@@ -82,7 +82,7 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input"
+                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
                 required
                 placeholder={t('auth.enterPassword')}
               />
@@ -91,15 +91,15 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn btn-primary py-3"
+              className="w-full backdrop-blur-md bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {loading ? t('auth.signingIn') : t('auth.signIn')}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-white/90">
             {t('auth.dontHaveAccount')}{' '}
-            <Link to="/register" className="text-primary-600 font-medium hover:underline">
+            <Link to="/register" className="text-white font-semibold hover:underline drop-shadow">
               {t('auth.signUp')}
             </Link>
           </p>

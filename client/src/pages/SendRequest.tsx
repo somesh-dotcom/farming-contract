@@ -183,13 +183,23 @@ const SendRequest = () => {
       setTimeout(() => navigate('/contracts'), 100);
     },
     onError: (err: any) => {
-      console.error('Contract request error:', err)
+      console.error('===== CONTRACT REQUEST ERROR =====');
+      console.error('Error object:', err);
+      console.error('Error response:', err.response);
+      console.error('Error response data:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      console.error('Error message:', err.message);
+      
       const errorMessage = err.response?.data?.message || 'Failed to create contract request';
-      console.error('[SendRequest] Error message:', errorMessage);
-      console.error('[SendRequest] Full error response:', err.response?.data);
-      setError(errorMessage)
+      console.error('Displaying error message:', errorMessage);
+      
+      setError(errorMessage);
+      
+      // Show alert for errors too
+      alert(`Error: ${errorMessage}`);
+      
       // Scroll to top to show error
-      window.scrollTo(0, 0)
+      window.scrollTo(0, 0);
     },
   })
 
@@ -212,12 +222,20 @@ const SendRequest = () => {
     const selectedProduct = productsData?.find((p: any) => p.id === formData.productId)
     const unit = formData.unit || selectedProduct?.unit || 'kg'
 
-    createRequestMutation.mutate({
+    const requestData = {
       ...formData,
       quantity: parseFloat(formData.quantity),
       proposedPrice: parseFloat(formData.proposedPrice),
       unit,
-    })
+    }
+
+    console.log('===== SUBMITTING CONTRACT REQUEST =====');
+    console.log('Form data:', formData);
+    console.log('Request data being sent:', requestData);
+    console.log('Current user:', user);
+    console.log('Auth token exists:', !!localStorage.getItem('token'));
+
+    createRequestMutation.mutate(requestData)
   }
 
   const selectedProduct = productsData?.find((p: any) => p.id === formData.productId)

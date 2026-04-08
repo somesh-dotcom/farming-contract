@@ -2,6 +2,7 @@ import express from 'express';
 import { prisma } from '../server';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { UserRole, ContractRequestStatus, ContractStatus } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
 
 const router = express.Router();
 
@@ -257,13 +258,15 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     // Create notification for farmer
     await prisma.notifications.create({
       data: {
+        id: uuidv4(),
         type: 'CONTRACT_REQUESTED',
         title: 'New Contract Request',
         message: `You have received a new contract request from ${buyer?.name || 'a buyer'} for ${product.name}`,
         recipientId: farmerId,
         senderId: req.userId!,
-        metadata: JSON.stringify({ requestId: request.id })
-      } as any
+        metadata: JSON.stringify({ requestId: request.id }),
+        updatedAt: new Date()
+      }
     });
 
     res.status(201).json({ 
@@ -288,9 +291,9 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     }
     
     res.status(500).json({ 
-      message: 'your request is succesfuly sent ', 
-      error: error.message,
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Failed to create contract request. Please try again.', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
@@ -387,13 +390,15 @@ router.patch('/:id/accept', authenticate, async (req: AuthRequest, res) => {
     // Create notification for buyer
     await prisma.notifications.create({
       data: {
+        id: uuidv4(),
         type: 'CONTRACT_REQUEST_ACCEPTED',
         title: 'Contract Request Accepted',
         message: `Your contract request for ${request.product.name} has been accepted by ${request.farmer.name}`,
         recipientId: request.buyerId,
         senderId: request.farmerId,
-        metadata: JSON.stringify({ requestId: request.id, contractId: contract.id })
-      } as any
+        metadata: JSON.stringify({ requestId: request.id, contractId: contract.id }),
+        updatedAt: new Date()
+      }
     });
 
     res.json({ 
@@ -458,13 +463,15 @@ router.patch('/:id/reject', authenticate, async (req: AuthRequest, res) => {
     // Create notification for buyer
     await prisma.notifications.create({
       data: {
+        id: uuidv4(),
         type: 'CONTRACT_REQUEST_REJECTED',
         title: 'Contract Request Rejected',
         message: `Your contract request has been rejected${reason ? ': ' + reason : ''}`,
         recipientId: request.buyerId,
         senderId: request.farmerId,
-        metadata: JSON.stringify({ requestId: request.id, reason })
-      } as any
+        metadata: JSON.stringify({ requestId: request.id, reason }),
+        updatedAt: new Date()
+      }
     });
 
     res.json({ message: 'Contract request rejected', request: updatedRequest });

@@ -85,10 +85,10 @@ const generatePriceFluctuation = (currentPrice: number, category: ProductCategor
   return currentPrice * (1 + fluctuation);
 };
 
-// Update prices for all products
+// Update prices for all products - creates new entries with today's date
 export const updateAllPrices = async () => {
   try {
-    console.log('🔄 Updating real-time market prices...');
+    console.log('🔄 Updating market price dates to today...');
     
     // Get all products
     const products = await prisma.product.findMany();
@@ -109,72 +109,51 @@ export const updateAllPrices = async () => {
       
       if (!latestPrice) continue;
       
-      // Get base price range for this category
-      const range = PRICE_RANGES[product.category] || PRICE_RANGES.OTHERS;
+      // Create a new entry with today's date but SAME price
+      await prisma.marketPrice.create({
+        data: {
+          productId: product.id,
+          price: latestPrice.price,  // Keep the same price
+          unit: latestPrice.unit,
+          location: latestPrice.location,
+          date: new Date()  // Update to current date/time
+        }
+      });
       
-      // Apply various multipliers
-      let newPrice = latestPrice.price;
-      
-      // Apply time-based fluctuation
-      const timeMultiplier = getTimeMultiplier();
-      newPrice = newPrice * timeMultiplier;
-      
-      // Apply seasonal adjustment
-      const seasonalMultiplier = getSeasonalMultiplier(product.category);
-      newPrice = newPrice * seasonalMultiplier;
-      
-      // Apply random fluctuation
-      newPrice = generatePriceFluctuation(newPrice, product.category);
-      
-      // Apply location-based adjustment if location exists
-      if (latestPrice.location) {
-        const area = latestPrice.location.replace('Bangalore - ', '');
-        const areaMultiplier = AREA_MULTIPLIERS[area] || 1.0;
-        newPrice = newPrice * areaMultiplier;
-      }
-      
-      // Ensure price stays within reasonable bounds
-      const minPrice = range.min * 0.7; // 30% buffer below minimum
-      const maxPrice = range.max * 1.5; // 50% buffer above maximum
-      newPrice = Math.max(minPrice, Math.min(maxPrice, newPrice));
-      
-      // Round to 2 decimal places
-      newPrice = Math.round(newPrice * 100) / 100;
-      
-      // Only update if price changed significantly (more than ₹0.50)
-      if (Math.abs(newPrice - latestPrice.price) >= 0.50) {
-        await prisma.marketPrice.create({
-          data: {
-            productId: product.id,
-            price: newPrice,
-            unit: latestPrice.unit,
-            location: latestPrice.location
-          }
-        });
-        
-        updatedCount++;
-        console.log(`📈 Updated ${product.name}: ₹${latestPrice.price} → ₹${newPrice}`);
-      }
+      updatedCount++;
+      console.log(`📅 Updated ${product.name} date to today - Price: ₹${latestPrice.price}`);
     }
     
-    console.log(`✅ Real-time price update completed. Updated ${updatedCount} prices.`);
+    console.log(`✅ Market price date update completed. Updated ${updatedCount} products to today's date.`);
     
   } catch (error) {
-    console.error('❌ Error updating real-time prices:', error);
+    console.error('❌ Error updating market price dates:', error);
   }
 };
 
-// Initialize daily price updates
+// Initialize daily date updates
 export const startRealTimePriceUpdates = () => {
-  console.log('🚀 Starting daily price updates...');
+  console.log('🚀 Starting daily market price date updates...');
   
-  // Update prices immediately on startup
+  // Update dates immediately on startup
   updateAllPrices();
   
-  // Update prices once per day (24 hours = 86400000 milliseconds)
-  setInterval(updateAllPrices, 24 * 60 * 60 * 1000);
+  // Update dates once per day at midnight (calculate time until next midnight)
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
   
-  console.log('⏰ Daily price updates scheduled (every 24 hours)');
+  const msUntilMidnight = tomorrow.getTime() - now.getTime();
+  
+  console.log(`⏰ Next date update scheduled at midnight (${msUntilMidnight / 1000 / 60} minutes from now)`);
+  
+  // First update at next midnight
+  setTimeout(() => {
+    updateAllPrices();
+    // Then update every 24 hours
+    setInterval(updateAllPrices, 24 * 60 * 60 * 1000);
+  }, msUntilMidnight);
 };
 
 // Get price trend indicator

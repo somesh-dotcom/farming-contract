@@ -11,6 +11,7 @@ import userRoutes from './routes/users';
 import contractRequestRoutes from './routes/contractRequests';
 import ratingRoutes from './routes/ratings';
 import { startRealTimePriceUpdates } from './realtimePrices';
+import { startBangaloreAreaDateUpdates } from './updateBangaloreAreaDates';
 
 dotenv.config();
 
@@ -58,8 +59,11 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   
-  // Start real-time price updates
+  // Start real-time price updates (general - keeps same prices, updates dates)
   startRealTimePriceUpdates();
+  
+  // Start Bangalore area date updates (specific to all 20 Bangalore areas)
+  startBangaloreAreaDateUpdates();
 });
 
 // Graceful shutdown
