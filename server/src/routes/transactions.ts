@@ -144,6 +144,12 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
+    // Set status based on payment method
+    // Cash payments are automatically marked as COMPLETED
+    const transactionStatus = paymentMethod === 'cash' 
+      ? TransactionStatus.COMPLETED 
+      : TransactionStatus.PENDING;
+
     const transaction = await prisma.transaction.create({
       data: {
         contractId,
@@ -151,7 +157,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
         amount: parseFloat(amount),
         paymentMethod,
         paymentType,
-        status: TransactionStatus.PENDING
+        status: transactionStatus
       },
       include: {
         contract: {
