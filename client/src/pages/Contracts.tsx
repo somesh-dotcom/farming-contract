@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import { format } from 'date-fns'
-import { PlusCircle, Eye, Calendar, Package, DollarSign, FileText } from 'lucide-react'
+import { PlusCircle, Eye, Calendar, Package, DollarSign, FileText, CreditCard } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { Contract } from '../types'
 
@@ -179,12 +179,24 @@ const Contracts = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => navigate(`/contracts/${contract.id}`)}
-                  className="ml-4 p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                >
-                  <Eye className="w-5 h-5" />
-                </button>
+                <div className="ml-4 flex gap-2">
+                  {contract.status === 'ACTIVE' && (
+                    <button
+                      onClick={() => navigate(`/payment/${contract.id}`)}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      title="View Payment"
+                    >
+                      <CreditCard className="w-5 h-5" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => navigate(`/contracts/${contract.id}`)}
+                    className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                    title="View Details"
+                  >
+                    <Eye className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}

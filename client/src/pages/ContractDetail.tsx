@@ -3,10 +3,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { format } from 'date-fns'
-import { ArrowLeft, Calendar, Package, MapPin, FileText, CheckCircle, XCircle, Edit2, Save, X, CreditCard } from 'lucide-react'
+import { ArrowLeft, Calendar, Package, MapPin, FileText, CheckCircle, XCircle, Edit2, Save, X, CreditCard, ExternalLink } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { ContractStatus } from '../types'
 import PaymentForm from '../components/PaymentForm'
+import PaymentGateway from '../components/PaymentGateway'
 
 const ContractDetail = () => {
   const { id } = useParams()
@@ -15,6 +16,7 @@ const ContractDetail = () => {
   const queryClient = useQueryClient()
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState<any>(null)
+  const [showPaymentGateway, setShowPaymentGateway] = useState(false)
 
   const { data: contractData, isLoading } = useQuery({
     queryKey: ['contract', id],
@@ -72,6 +74,12 @@ const ContractDetail = () => {
     if (editData) {
       updateContractMutation.mutate(editData)
     }
+  }
+
+  const handlePaymentSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['contract', id] })
+    queryClient.invalidateQueries({ queryKey: ['contracts'] })
+    setShowPaymentGateway(false)
   }
 
   const handleEditChange = (field: string, value: any) => {
@@ -559,20 +567,48 @@ const ContractDetail = () => {
                   </>
                 )}
                 {contract.status === 'ACTIVE' && (
-                  <button
-                    onClick={() => updateStatusMutation.mutate('COMPLETED')}
-                    disabled={updateStatusMutation.isPending}
-                    className="w-full btn btn-primary flex items-center justify-center gap-2"
-                  >
-                    <CheckCircle className="w-4 h-4" />
-                    Mark as Completed
-                  </button>
+                  <>
+                    <button
+                      onClick={() => navigate(`/payment/${contract.id}`)}
+                      className="w-full btn btn-secondary flex items-center justify-center gap-2 mb-2"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      View Payment Page
+                    </button>
+                    {!contract.isPaid && (
+                      <button
+                        onClick={() => setShowPaymentGateway(true)}
+                        className="w-full btn btn-primary flex items-center justify-center gap-2 mb-2"
+                      >
+                        <CreditCard className="w-4 h-4" />
+                        Pay Now - ₹{contract.totalPrice?.toLocaleString()}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => updateStatusMutation.mutate('COMPLETED')}
+                      disabled={updateStatusMutation.isPending}
+                      className="w-full btn btn-secondary flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Mark as Completed
+                    </button>
+                  </>
                 )}
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Payment Gateway Modal */}
+      {showPaymentGateway && (
+        <PaymentGateway
+          contractId={contract.id}
+          amount={contract.totalPrice || contract.totalValue || 0}
+          onSuccess={handlePaymentSuccess}
+          onCancel={() => setShowPaymentGateway(false)}
+        />
+      )}
     </div>
   )
 }

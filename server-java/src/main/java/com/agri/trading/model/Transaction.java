@@ -65,5 +65,7 @@ public class Transaction {
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
     public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

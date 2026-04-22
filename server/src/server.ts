@@ -7,6 +7,7 @@ import contractRoutes from './routes/contracts';
 import productRoutes from './routes/products';
 import marketPriceRoutes from './routes/marketPrices';
 import transactionRoutes from './routes/transactions';
+import paymentRoutes from './routes/payments';
 import userRoutes from './routes/users';
 import contractRequestRoutes from './routes/contractRequests';
 import ratingRoutes from './routes/ratings';
@@ -38,6 +39,7 @@ app.use('/api/contracts', contractRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/market-prices', marketPriceRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/contract-requests', contractRequestRoutes);
 app.use('/api/ratings', ratingRoutes);
 

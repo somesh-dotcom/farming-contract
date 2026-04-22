@@ -3,6 +3,9 @@ import axios from 'axios'
 import { User } from '../types'
 import { queryClient } from '../lib/queryClient'
 
+// Configure axios base URL
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5004'
+
 interface AuthContextType {
   user: User | null
   token: string | null
