@@ -1,19 +1,18 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { format } from 'date-fns'
-import { ArrowLeft, CreditCard, Package, Calendar, MapPin, User, DollarSign, AlertCircle, CheckCircle } from 'lucide-react'
+import { ArrowLeft, CreditCard, Package, MapPin, User, DollarSign, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import PaymentGateway from '../components/PaymentGateway'
 
 const PaymentPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  useAuth()
   const queryClient = useQueryClient()
   const [showPaymentGateway, setShowPaymentGateway] = useState(false)
-  const [paymentError, setPaymentError] = useState('')
 
   const { data: contractData, isLoading } = useQuery({
     queryKey: ['contract', id],
