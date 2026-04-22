@@ -264,7 +264,7 @@ export interface FarmerRating {
 
 {% raw %}
 ```tsx
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 
 function FarmerProfile({ farmerId }) {
@@ -308,7 +308,7 @@ function FarmerProfile({ farmerId }) {
             <div className="bar">
               <div 
                 className="fill" 
-                style={{ width: `${(distribution[stars] / farmer.totalRatings) * 100}%` }}
+                style={"{{"} width: `${(distribution[stars] / farmer.totalRatings) * 100}%` {"}}"}}
               />
             </div>
             <span>{distribution[stars]}</span>
