@@ -262,6 +262,7 @@ export interface FarmerRating {
 
 ### React Component Example
 
+{% raw %}
 ```tsx
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
@@ -337,11 +338,13 @@ function FarmerProfile({ farmerId }) {
   );
 }
 ```
+{% endraw %}
 
 ---
 
 ### Rating Form Component
 
+{% raw %}
 ```tsx
 function RatingForm({ farmerId, contractId, onSuccess }) {
   const [rating, setRating] = useState(0);
@@ -399,6 +402,7 @@ function RatingForm({ farmerId, contractId, onSuccess }) {
   );
 }
 ```
+{% endraw %}
 
 ---
 
@@ -406,6 +410,7 @@ function RatingForm({ farmerId, contractId, onSuccess }) {
 
 ### Dashboard Stats Card
 
+{% raw %}
 ```tsx
 function DashboardStats({ user }) {
   return (
@@ -435,6 +440,7 @@ function DashboardStats({ user }) {
   );
 }
 ```
+{% endraw %}
 
 ---
 
