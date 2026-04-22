@@ -11,14 +11,17 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - **5-Star Rating & Feedback**: Buyers can rate farmers after contract completion
 - **Real-time Market Price Tracking**: Live price feeds and historical trend analysis
 - **Integrated Payment System**: Transaction management and payment tracking
+- **Automated Cash Payment Completion**: Cash payments automatically marked as COMPLETED
 - **Analytics Dashboard**: Comprehensive statistics and business insights
 - **Location-based Pricing**: Geographic price variations and delivery management
 - **Bilingual Support**: Full English and Kannada language support for wider accessibility
 - **Enhanced Admin Controls**: Advanced transaction management with status toggling and deletion capabilities
-- **Bangalore-Specific Locations**: Focused location selection for improved logistics and delivery management
+- **Admin User Management**: Permanent user deletion with complete data cleanup
+- **Bangalore-Specific Locations**: Focused location selection with automated daily date updates for 20 areas
 - **Automated Contract Completion**: Contracts automatically marked as COMPLETED when all payments are processed
 - **Improved Transaction Visibility**: Buyers can see all transactions related to their contracts, not just those they created
 - **Admin-Only Contract Status Changes**: Only admins can change COMPLETED contracts back to other statuses
+- **Glass Morphism UI**: Modern transparent glass-effect login interface
 
 ### Key Benefits
 - ✅ **Market Transparency**: Real-time pricing data for informed decision-making
@@ -28,10 +31,14 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - ✅ **Data-driven Insights**: Analytics for strategic planning
 - ✅ **Multilingual Support**: Accessible in both English and Kannada for broader reach
 - ✅ **Enhanced Admin Controls**: Advanced transaction management capabilities
+- ✅ **Automated Cash Payments**: Cash transactions instantly marked as completed
 - ✅ **Localized Delivery**: Bangalore-area-specific location selection for improved logistics
+- ✅ **Automated Date Updates**: Daily automatic date updates for all 20 Bangalore areas
 - ✅ **Automated Contract Completion**: Contracts automatically marked as COMPLETED when all payments are processed
 - ✅ **Complete Transaction Visibility**: Buyers can see all transactions related to their contracts
 - ✅ **Secure Status Management**: Only admins can change completed contract statuses
+- ✅ **Complete User Deletion**: Admins can permanently delete users with all associated data
+- ✅ **Modern Glass UI**: Beautiful transparent glass-morphism login interface
 - ✅ **Flexible Storage Options**: PostgreSQL for production or JSON file storage for development/testing
 - ✅ **Two-Way Contract Creation**: Farmers create direct contracts, buyers send requests
 - ✅ **Verified Rating System**: Only buyers with completed contracts can rate farmers
@@ -365,7 +372,8 @@ npm run dev
 
 - **Admins** can:
   - View all contracts and requests
-  - Manage users
+  - Manage users (create, edit, delete)
+  - **Permanently delete users with all associated data** (contracts, transactions, ratings, notifications)
   - Add/update market prices
   - Toggle transaction statuses (Pending ↔ Complete)
   - Delete transactions as needed
@@ -381,6 +389,8 @@ npm run dev
 - Filter by time period (daily, weekly, monthly)
 - See price trends and geographic variations
 - Compare prices across different locations
+- **Bangalore Areas**: Track prices across 20 Bangalore-specific areas (Indiranagar, Koramangala, Whitefield, etc.)
+- **Automated Date Updates**: Market price dates automatically update daily at midnight
 - **Bilingual Interface**: Full support for English and Kannada languages throughout the application
 
 ### 5. Transactions
@@ -389,6 +399,7 @@ npm run dev
 - View transaction status (Pending/Completed/Failed)
 - Monitor total amounts and pending payments
 - Record different payment types (Advance, Partial, Final, Refund)
+- **Automated Cash Completion**: Cash payments are automatically marked as COMPLETED upon creation
 - **Enhanced Buyer Visibility**: Buyers can see all transactions related to their contracts, not just those they created
 - **Admin Features**: Administrators can now toggle transaction status between Pending and Complete, and delete transactions as needed
 
@@ -722,6 +733,45 @@ This project includes comprehensive JavaScript utility modules:
 - **API Utilities** (`apiUtils.js`): Request handling and error management
 
 These utilities can be imported individually or as a complete suite via the main index file.
+
+## 🆀 New Features (Latest Updates)
+
+### 💰 Automated Cash Payment Completion
+- Cash payments are **automatically marked as COMPLETED** when created
+- Other payment methods (Bank Transfer, UPI, Card, etc.) remain PENDING for verification
+- Streamlines cash transaction workflow
+- No manual status update needed for cash payments
+- **Location**: `server/src/routes/transactions.ts`
+
+### 👤 Admin Permanent User Deletion
+- Admins can **permanently delete users** with complete data cleanup
+- Deletes all associated data in a safe transaction:
+  - User account
+  - All contracts (as buyer or farmer)
+  - All transactions
+  - All ratings (given and received)
+  - All notifications (sent and received)
+  - All contract requests
+- **Double confirmation** required to prevent accidental deletion
+- Admin users cannot be deleted
+- Admins cannot delete themselves
+- **Location**: `server/src/routes/users.ts`, `client/src/pages/Users.tsx`
+
+### 📅 Automated Bangalore Area Date Updates
+- **20 Bangalore areas** with automated daily date updates
+- Areas include: Indiranagar, Koramangala, Whitefield, HSR Layout, BTM Layout, Jayanagar, Malleshwaram, Electronic City, Marathahalli, Bannerghatta, Hebbal, Yelahanka, Frazer Town, RT Nagar, Peenya, Banashankari, Basavanagudi, Wilson Garden, Ulsoor, KR Puram
+- **Runs daily at midnight** - updates all market price dates to current date
+- **Preserves price values** - only updates dates, not prices
+- Prevents duplicate entries for the same day
+- **Location**: `server/src/updateBangaloreAreaDates.ts`
+
+### 🎨 Glass Morphism Login UI
+- Modern **transparent glass-effect** login interface
+- Frosted glass card with backdrop blur
+- Beautiful overlay on background image
+- Enhanced visual appeal with drop shadows
+- All form elements styled with glass effect
+- **Location**: `client/src/pages/Login.tsx`
 
 ## 📄 License
 
