@@ -57,16 +57,21 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  
-  // Start real-time price updates (general - keeps same prices, updates dates)
-  startRealTimePriceUpdates();
-  
-  // Start Bangalore area date updates (specific to all 20 Bangalore areas)
-  startBangaloreAreaDateUpdates();
-});
+// Start server (only if not running on Vercel/serverless)
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    
+    // Start real-time price updates (general - keeps same prices, updates dates)
+    startRealTimePriceUpdates();
+    
+    // Start Bangalore area date updates (specific to all 20 Bangalore areas)
+    startBangaloreAreaDateUpdates();
+  });
+}
+
+// Export the app for serverless deployment (Vercel)
+export default app;
 
 // Graceful shutdown
 process.on('beforeExit', async () => {
