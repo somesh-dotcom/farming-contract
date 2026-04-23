@@ -14,7 +14,7 @@
     }
   },
   "deploy": {
-    "startCommand": "java -jar server-java/target/*.jar -Dserver.port=$PORT",
+    "startCommand": "cd server-java && java -jar target/agri-trading-1.0.0.jar -Dserver.port=$PORT",
     "healthcheckPath": "/api/health",
     "healthcheckTimeout": 600,
     "restartPolicyType": "ON_FAILURE",
