@@ -1,4 +1,4 @@
-import { prisma } from './server';
+import { prisma } from './lib/prisma';
 
 // Bangalore areas list
 const BANGALORE_AREAS = [

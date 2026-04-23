@@ -1,5 +1,5 @@
 import express from 'express';
-import { prisma } from '../server';
+import { prisma } from '../lib/prisma';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { UserRole, ContractRequestStatus, ContractStatus } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';

@@ -1,4 +1,4 @@
-import { prisma } from './server';
+import { prisma } from './lib/prisma';
 import { ProductCategory } from '@prisma/client';
 
 // Realistic price ranges for different product categories (in INR)
