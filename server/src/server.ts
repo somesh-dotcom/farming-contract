@@ -23,8 +23,14 @@ const PORT = process.env.PORT || 5000;
 // Initialize Prisma Client (singleton pattern for serverless)
 // Imported from lib/prisma.ts
 
-// Middleware
-app.use(cors());
+// Middleware - CORS configuration for production
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

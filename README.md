@@ -427,8 +427,7 @@ This starts:
    - **Admin**: Full system access, user management
 4. Fill in your details and create an account
 
-> **Default Accounts** (File Database Mode):
-### **Default Accounts**
+#### **Default Accounts**
 
 **Admin Account:**
 - Email: `admin@contractfarming.com`
@@ -443,9 +442,9 @@ This starts:
 - Password: `password123`
 
 **PostgreSQL Mode:**
-Run the seed script.
+Run the seed script to create default accounts.
 
-You can use these accounts to access the system.
+You can use these accounts to access the system. For security, consider changing the passwords after first login.
 
 ### 2. Creating a Contract (Farmer)
 

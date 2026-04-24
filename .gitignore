@@ -17,10 +17,42 @@ coverage/
 server/dist/
 server/node_modules/
 server/.env
+server/.env.local
+server/config/database.json
+server/config/backup*.json
 
 # Client
 client/node_modules/
 client/build/
 client/.env
 client/.env.local
+client/.env.*.local
+client/dist
+client/.vercel
 
+# Java backend
+server-java/target/
+server-java/.env
+server-java/*.jar
+
+# IDE
+*.iml
+.vscode/settings.json
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Vercel
+.vercel

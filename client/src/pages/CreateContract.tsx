@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -105,14 +105,6 @@ const AreaPriceComparison = ({ productId }: { productId: string }) => {
 
 const CreateContract = () => {
   const { user, token } = useAuth()
-  
-  // Debug authentication state
-  useEffect(() => {
-    console.log('Auth Debug - User:', user);
-    console.log('Auth Debug - Token exists:', !!token);
-    console.log('Auth Debug - Token length:', token ? token.length : 0);
-    console.log('Auth Debug - Axios auth header:', axios.defaults.headers.common['Authorization']);
-  }, [user, token]);
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { t } = useTranslation()
