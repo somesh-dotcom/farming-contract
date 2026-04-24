@@ -1,0 +1,21 @@
+{
+  "name": "contract-farming-system",
+  "version": "1.0.0",
+  "description": "Agricultural Trading Platform - Contract Farming System",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "prisma:migrate": "cd server && npm run prisma:migrate",
+    "prisma:generate": "cd server && npm run prisma:generate",
+    "prisma:studio": "cd server && npm run prisma:studio",
+    "seed": "cd server && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

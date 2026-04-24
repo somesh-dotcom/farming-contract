@@ -2,6 +2,10 @@
 
 A comprehensive full-stack application for managing agricultural commodity trading between farmers and buyers, featuring real-time market price tracking, contract management, and payment processing. The platform ensures transparent and efficient transactions in the agricultural supply chain.
 
+**🆕 Now Available in Two Backend Options:**
+- **Node.js/Express** (TypeScript) - Original implementation
+- **Java Spring Boot** - Enterprise-grade migration with enhanced performance
+
 ## 🌾 Features
 
 ### Core Functionality
@@ -45,7 +49,9 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 
 ## 🛠️ Tech Stack
 
-### Backend
+### Backend Options
+
+#### Option 1: Node.js/Express (TypeScript)
 - **Node.js** with **Express.js**
 - **TypeScript** for enhanced type safety
 - **Prisma ORM** for robust database management
@@ -55,6 +61,17 @@ A comprehensive full-stack application for managing agricultural commodity tradi
 - **BcryptJS** for secure password hashing
 - **Zod** for schema validation
 - **Express Validator** for request validation
+
+#### Option 2: Java Spring Boot ⭐ NEW
+- **Java 17** with **Spring Boot 3.2.0**
+- **Spring Security** with JWT authentication
+- **JPA/Hibernate** for database ORM
+- **PostgreSQL** for production database
+- **Maven** for build automation
+- **Lombok** for reduced boilerplate code
+- **Jackson** for JSON processing
+- **Spring Validation** for request validation
+- **Enterprise-grade security** and performance
 
 ### Frontend
 - **React 18** with **TypeScript** for type-safe development
@@ -126,7 +143,7 @@ agricultural-commodity-platform/
 │   │   └── index.css          # Global styles
 │   ├── public/
 │   └── package.json
-├── server/                    # Backend API server
+├── server/                    # Backend API server (Node.js/Express)
 │   ├── src/
 │   │   ├── routes/            # API route handlers
 │   │   │   ├── auth.ts
@@ -149,25 +166,79 @@ agricultural-commodity-platform/
 │   │   ├── schema.prisma      # Database schema definition
 │   │   └── migrations/        # Database migration files
 │   └── package.json
+├── server-java/               # Backend API server (Java Spring Boot) ⭐ NEW
+│   ├── src/main/java/com/agri/trading/
+│   │   ├── AgriTradingApplication.java    # Main application class
+│   │   ├── config/                        # Configuration classes
+│   │   │   ├── DataLoaderConfig.java
+│   │   │   ├── JwtAuthFilter.java
+│   │   │   └── SecurityConfig.java
+│   │   ├── controller/                    # REST Controllers
+│   │   │   ├── AuthController.java
+│   │   │   ├── ContractController.java
+│   │   │   ├── ContractRequestController.java
+│   │   │   ├── MarketPriceController.java
+│   │   │   ├── ProductController.java
+│   │   │   ├── RatingController.java
+│   │   │   ├── TransactionController.java
+│   │   │   └── UserController.java
+│   │   ├── dto/                           # Data Transfer Objects
+│   │   │   ├── AuthResponse.java
+│   │   │   ├── LoginRequest.java
+│   │   │   └── RegisterRequest.java
+│   │   ├── model/                         # JPA Entities
+│   │   │   ├── User.java
+│   │   │   ├── Product.java
+│   │   │   ├── Contract.java
+│   │   │   ├── MarketPrice.java
+│   │   │   ├── Transaction.java
+│   │   │   └── *.java (Enums)
+│   │   ├── repository/                    # Spring Data Repositories
+│   │   │   ├── UserRepository.java
+│   │   │   ├── ProductRepository.java
+│   │   │   ├── ContractRepository.java
+│   │   │   ├── MarketPriceRepository.java
+│   │   │   └── TransactionRepository.java
+│   │   ├── security/                      # JWT Security
+│   │   │   └── JwtTokenProvider.java
+│   │   └── service/                       # Business Logic
+│   │       └── AuthService.java
+│   ├── src/main/resources/
+│   │   └── application.properties         # Application configuration
+│   ├── pom.xml                            # Maven dependencies
+│   └── README.md                          # Java backend documentation
 ├── .env                       # Environment variables
 ├── .gitignore
 ├── package.json               # Root package configuration
 ├── run.sh                     # Setup and execution script
+├── run-java-backend.sh        # Java backend run script
 ├── README.md                  # Project documentation
+├── DEPLOYMENT_STEPS.md        # Vercel deployment guide
 └── QUICK_START.md             # Quick setup guide
 ```
 
 **Empowering farmers and buyers with transparent, efficient agricultural trade**
+
 ## 🚀 Quick Start
 
+### Choose Your Backend
+
+This project supports **two backend implementations**:
+
+1. **Node.js/Express (TypeScript)** - Quick setup, flexible development
+2. **Java Spring Boot** - Enterprise-grade, production-ready
+
+Both backends are **100% compatible** with the same React frontend!
+
 ### Prerequisites
-- **Node.js** (v18 or higher)
+- **Node.js** (v18 or higher) - For Node.js backend
+- **Java 17+** and **Maven 3.6+** - For Java backend
 - **PostgreSQL** (v12 or higher) - Optional for file-based database mode
 - **Git** for version control
 
-### Automated Setup
+### Automated Setup (Node.js Backend)
 
-For the quickest setup, use the provided script:
+For the quickest setup with Node.js backend:
 
 ```bash
 chmod +x run.sh
@@ -175,6 +246,15 @@ chmod +x run.sh
 ```
 
 Follow the interactive prompts to set up, seed, and start the application.
+
+### Quick Start with Java Backend ⭐
+
+```bash
+chmod +x run-java-backend.sh
+./run-java-backend.sh
+```
+
+This will build and start the Java Spring Boot backend automatically.
 
 ### Manual Installation
 
@@ -283,6 +363,8 @@ This creates:
 
 #### 5. Start the Application
 
+**Option A: Node.js Backend**
+
 **Development Mode** (Runs both server and client):
 
 ```bash
@@ -306,6 +388,32 @@ Frontend only:
 cd client
 npm run dev
 ```
+
+**Option B: Java Spring Boot Backend** ⭐
+
+**Using the run script**:
+```bash
+./run-java-backend.sh
+```
+
+**Using Maven directly**:
+```bash
+cd server-java
+mvn spring-boot:run
+```
+
+**Using JAR file**:
+```bash
+cd server-java
+mvn clean package
+java -jar target/agri-trading-1.0.0.jar
+```
+
+This starts:
+- Java backend on `http://localhost:5000`
+- Frontend client on `http://localhost:3000` (run separately)
+
+> **Note**: The React frontend works seamlessly with **both** backends without any code changes!
 
 ## 👥 Usage
 
@@ -466,9 +574,9 @@ You can use these accounts to access the system.
 
 ### Option A: PostgreSQL (Production)
 
-Full relational database with Prisma ORM for production deployments.
+Full relational database with Prisma ORM (Node.js) or JPA/Hibernate (Java) for production deployments.
 
-### Option B: JSON File Database (Development/Testing)
+### Option B: JSON File Database (Development/Testing - Node.js Only)
 
 All data stored in a single JSON file: `/server/config/database.json`
 
@@ -478,6 +586,7 @@ All data stored in a single JSON file: `/server/config/database.json`
 - Pre-loaded with sample data (users, products, contracts, prices)
 - Easy backup and restore
 - No database server required
+- **Note**: Java backend uses PostgreSQL only
 
 **Sample Data Included:**
 - 3 Users (Admin, Farmer, Buyer)
@@ -645,6 +754,70 @@ FILE_DATABASE_PATH=./config/database.json
 FILE_DATABASE_BACKUP_PATH=./config/backup_all_data.json
 ```
 
+## ☕ Java Spring Boot Backend - Enterprise Migration ⭐ NEW
+
+This project now includes a **complete Java Spring Boot backend** as an alternative to the Node.js implementation!
+
+### Why Java Backend?
+
+- ✅ **Enterprise-Grade**: Spring Boot ecosystem with production-ready features
+- ✅ **Type Safety**: Java's strong typing reduces runtime errors
+- ✅ **Better Performance**: JVM optimization and multithreading capabilities
+- ✅ **Enhanced Security**: Built-in Spring Security with JWT authentication
+- ✅ **Scalability**: Better suited for large-scale, high-traffic applications
+- ✅ **100% Compatible**: Works with the existing React frontend without changes
+
+### Java Backend Features
+
+**Completed Implementation:**
+- ✅ Spring Boot 3.2.0 with Java 17
+- ✅ Spring Security with JWT authentication
+- ✅ JPA/Hibernate ORM for database operations
+- ✅ Complete REST API matching Node.js endpoints
+- ✅ All core entities (User, Product, Contract, MarketPrice, Transaction)
+- ✅ Data transfer objects (DTOs) for clean API design
+- ✅ CORS configuration for React frontend
+- ✅ Maven build automation
+- ✅ PostgreSQL database integration
+
+**Available Endpoints:**
+- Authentication: `/api/auth/login`, `/api/auth/register`, `/api/auth/me`
+- Products: `/api/products`, `/api/products/{id}`
+- Market Prices: `/api/market-prices`, `/api/market-prices/latest`
+- Contracts: `/api/contracts`, `/api/contracts/{id}`
+- Transactions: `/api/transactions`, `/api/transactions/{id}`
+- Users: `/api/users`, `/api/users/{id}`, `/api/users/role/{role}`
+
+### Quick Start with Java
+
+```bash
+# Navigate to Java backend
+cd server-java
+
+# Build and run
+mvn spring-boot:run
+
+# Or use the convenience script
+cd ..
+./run-java-backend.sh
+```
+
+### Switching Between Backends
+
+**To use Node.js backend:**
+```bash
+npm run dev  # Starts Node.js server on port 5000
+```
+
+**To use Java backend:**
+```bash
+./run-java-backend.sh  # Starts Java server on port 5000
+```
+
+> **Important**: Both backends run on the same port (5000) and provide identical APIs. You can switch between them without changing any frontend code!
+
+For detailed Java backend documentation, see [`server-java/README.md`](server-java/README.md) and [`server-java/MIGRATION_COMPLETE.md`](server-java/MIGRATION_COMPLETE.md).
+
 ## 🐞 Troubleshooting
 
 ### Common Issues
@@ -738,6 +911,15 @@ These utilities can be imported individually or as a complete suite via the main
 
 ## 🆀 New Features (Latest Updates)
 
+### ☕ Java Spring Boot Backend Migration ⭐ NEWEST
+- **Complete backend migration** from Node.js to Java Spring Boot 3.2.0
+- **Enterprise-grade architecture** with Spring Security and JPA/Hibernate
+- **100% frontend compatibility** - React app works without any changes
+- **Enhanced performance** with JVM optimization and multithreading
+- **Production-ready** with built-in security and scalability features
+- **Maven build system** for streamlined dependency management
+- **Location**: `server-java/` directory with full documentation
+
 ### 💰 Automated Cash Payment Completion
 - Cash payments are **automatically marked as COMPLETED** when created
 - Other payment methods (Bank Transfer, UPI, Card, etc.) remain PENDING for verification
@@ -778,6 +960,18 @@ These utilities can be imported individually or as a complete suite via the main
 ## 📄 License
 
 MIT License - Feel free to use, modify, and distribute this software.
+
+## 🌟 Key Highlights
+
+- **Dual Backend Support**: Choose between Node.js/Express or Java Spring Boot
+- **Frontend Compatibility**: Same React UI works with both backends
+- **Production Ready**: Both backends support PostgreSQL for production
+- **Easy Development**: JSON file database for quick testing (Node.js only)
+- **Enterprise Features**: Java backend with Spring Security and JPA
+- **Rapid Development**: Node.js with hot reloading and Prisma ORM
+- **Cloud Deployment**: Ready for Vercel, Railway, or any cloud platform
+- **Bilingual Support**: Full English and Kannada language support
+- **Modern UI**: Glass morphism design with responsive layout
 
 ## 🆘 Support
 

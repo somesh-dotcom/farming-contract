@@ -2,11 +2,27 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/health.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/auto-update-dates.ts",
+      "use": "@vercel/node"
+    },
+    {
       "src": "api/index.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
+    {
+      "src": "/api/health",
+      "dest": "api/health.ts"
+    },
+    {
+      "src": "/api/auto-update-dates",
+      "dest": "api/auto-update-dates.ts"
+    },
     {
       "src": "/(.*)",
       "dest": "api/index.ts"

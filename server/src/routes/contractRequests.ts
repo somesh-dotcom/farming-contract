@@ -2,7 +2,7 @@ import express from 'express';
 import { prisma } from '../lib/prisma';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { UserRole, ContractRequestStatus, ContractStatus } from '@prisma/client';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -258,7 +258,7 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     // Create notification for farmer
     await prisma.notifications.create({
       data: {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         type: 'CONTRACT_REQUESTED',
         title: 'New Contract Request',
         message: `You have received a new contract request from ${buyer?.name || 'a buyer'} for ${product.name}`,
@@ -390,7 +390,7 @@ router.patch('/:id/accept', authenticate, async (req: AuthRequest, res) => {
     // Create notification for buyer
     await prisma.notifications.create({
       data: {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         type: 'CONTRACT_REQUEST_ACCEPTED',
         title: 'Contract Request Accepted',
         message: `Your contract request for ${request.product.name} has been accepted by ${request.farmer.name}`,
@@ -463,7 +463,7 @@ router.patch('/:id/reject', authenticate, async (req: AuthRequest, res) => {
     // Create notification for buyer
     await prisma.notifications.create({
       data: {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         type: 'CONTRACT_REQUEST_REJECTED',
         title: 'Contract Request Rejected',
         message: `Your contract request has been rejected${reason ? ': ' + reason : ''}`,

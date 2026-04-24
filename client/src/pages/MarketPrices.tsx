@@ -8,13 +8,16 @@ import {
   Clock
 } from 'lucide-react'
 import { format } from 'date-fns'
+import { useAuth } from '../contexts/AuthContext'
 
 // Area Price Comparison Component removed - not used in simplified version
 
 const MarketPrices = () => {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
   const [selectedArea, setSelectedArea] = useState('')
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  const [isUpdating, setIsUpdating] = useState(false)
   const { t } = useTranslation()
 
   // Auto-refresh prices every 24 hours (daily updates)
@@ -26,6 +29,23 @@ const MarketPrices = () => {
 
     return () => clearInterval(interval);
   }, [queryClient]);
+
+  // Trigger daily date update
+  const handleDailyUpdate = async () => {
+    try {
+      setIsUpdating(true);
+      await axios.post('/api/market-prices/update-dates');
+      setLastUpdate(new Date());
+      // Refresh the prices
+      queryClient.invalidateQueries({ queryKey: ['marketPrices'] });
+      alert('✅ Daily date update completed! Prices remain the same, dates updated to today.');
+    } catch (error) {
+      console.error('Error updating dates:', error);
+      alert('❌ Failed to update dates. Make sure you are logged in as admin.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   // Bangalore areas
   const bangaloreAreas = [
@@ -47,6 +67,16 @@ const MarketPrices = () => {
 
   const latestPrices = latestPricesData || []
 
+  // Filter to only show Bangalore areas (including general "Bangalore")
+  const bangaloreAreaPrefixes = bangaloreAreas.map(area => `Bangalore - ${area}`)
+  bangaloreAreaPrefixes.push('Bangalore') // Include general Bangalore location
+  
+  const filteredPrices = selectedArea 
+    ? latestPrices
+    : latestPrices.filter((price: any) => 
+        price.location && bangaloreAreaPrefixes.includes(price.location)
+      )
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -60,6 +90,17 @@ const MarketPrices = () => {
             <span>Last updated: {lastUpdate.toLocaleTimeString()}</span>
           </div>
         </div>
+        {/* Only show update button for admins */}
+        {user?.role === 'ADMIN' && (
+          <button
+            onClick={handleDailyUpdate}
+            disabled={isUpdating}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${isUpdating ? 'animate-spin' : ''}`} />
+            {isUpdating ? 'Updating...' : 'Update to Today'}
+          </button>
+        )}
       </div>
 
       {/* Area Filter */}
@@ -97,7 +138,7 @@ const MarketPrices = () => {
           </p>
         </div>
       )}
-      {latestPrices.length === 0 ? (
+      {filteredPrices.length === 0 ? (
         <div className="card text-center py-12">
           <p className="text-gray-600">
             {selectedArea
@@ -107,7 +148,7 @@ const MarketPrices = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {latestPrices.map((price: any) => (
+          {filteredPrices.map((price: any) => (
             <div key={price.id} className="card hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">

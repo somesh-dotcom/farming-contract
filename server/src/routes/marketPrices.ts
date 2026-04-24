@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { authorize } from '../middleware/auth';
 import { UserRole } from '@prisma/client';
+import { updateBangaloreAreaDates } from '../updateBangaloreAreaDates';
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ router.get('/', async (req, res) => {
     let take: number | undefined;
 
     if (latest === 'true') {
-      // Get latest price per product (and per location if location filter is set)
+      // Get latest price per product per location
       const prices = await prisma.marketPrice.findMany({
         where: filters,
         include: {
@@ -35,12 +36,10 @@ router.get('/', async (req, res) => {
         orderBy: { date: 'desc' }
       });
 
-      // Group by product (and location if location filter is set) and get latest
+      // Group by product AND location to get latest price for each combination
       const latestPrices = prices.reduce((acc: any, price) => {
-        // Create a unique key: productId or productId+location
-        const key = filters.location 
-          ? `${price.productId}-${price.location || 'all'}` 
-          : price.productId;
+        // Always create a unique key: productId-location
+        const key = `${price.productId}-${price.location || 'all'}`;
         
         if (!acc[key] || acc[key].date < price.date) {
           acc[key] = price;
@@ -64,6 +63,21 @@ router.get('/', async (req, res) => {
   } catch (error: any) {
     console.error('Get market prices error:', error);
     res.status(500).json({ message: 'Failed to fetch market prices', error: error.message });
+  }
+});
+
+// Trigger daily date update (admin only)
+router.post('/update-dates', authenticate, authorize(UserRole.ADMIN), async (req: AuthRequest, res) => {
+  try {
+    console.log('🔄 Manual trigger: Updating Bangalore area dates...');
+    await updateBangaloreAreaDates();
+    res.json({ 
+      message: 'Daily date update triggered successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error: any) {
+    console.error('Error triggering date update:', error);
+    res.status(500).json({ message: 'Failed to update dates', error: error.message });
   }
 });
 
