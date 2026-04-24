@@ -320,6 +320,24 @@ npm run dev
 4. Fill in your details and create an account
 
 > **Default Accounts** (File Database Mode):
+### **Default Accounts**
+
+**Admin Account:**
+- Email: `admin@contractfarming.com`
+- Password: `password123`
+
+**Farmer Account:**
+- Email: `farmer@example.com`
+- Password: `password123`
+
+**Buyer Account:**
+- Email: `buyer@example.com`
+- Password: `password123`
+
+**PostgreSQL Mode:**
+Run the seed script.
+
+You can use these accounts to access the system.
 
 ### 2. Creating a Contract (Farmer)
 
