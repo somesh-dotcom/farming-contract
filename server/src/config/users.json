@@ -3,7 +3,7 @@
     "id": "user_001",
     "name": "Admin User",
     "email": "admin@contractfarming.com",
-    "password": "$2b$10$YourHashedPasswordHere",
+    "password": "$2a$10$QlRxgpS9CqDxyK6Ajt8aR.WD9EqJmpUPSb7wxngUkrnRr/5mxRjSC",
     "role": "ADMIN",
     "phone": "+919876543210",
     "location": "Bangalore",

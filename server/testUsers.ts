@@ -14,7 +14,7 @@ async function testUsers() {
     if (userCount === 0) {
       console.log('🌱 No users found. Running seed...');
       // Run seed logic
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const hashedPassword = await bcrypt.hash('admin@3900', 10);
       await prisma.user.create({
         data: {
           email: 'admin@contractfarming.com',

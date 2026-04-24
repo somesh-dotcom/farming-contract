@@ -137,7 +137,7 @@ curl https://server-theta-lime-34.vercel.app/api/health
 # Test login (after seeding)
 curl -X POST https://server-theta-lime-34.vercel.app/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@contractfarming.com","password":"admin123"}'
+  -d '{"email":"admin@contractfarming.com","password":"<ADMIN_PASSWORD>"}'
 ```
 
 ---
@@ -164,6 +164,6 @@ curl -X POST https://server-theta-lime-34.vercel.app/api/auth/login \
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@contractfarming.com | admin123 |
+| Admin | admin@contractfarming.com | *(See deployment configuration)* |
 | Farmer | farmer@example.com | password123 |
 | Buyer | buyer@example.com | password123 |

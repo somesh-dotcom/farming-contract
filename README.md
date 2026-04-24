@@ -357,7 +357,7 @@ npm run seed
 ```
 
 This creates:
-- Admin user: `admin@contractfarming.com` / `admin123`
+- Admin user: `admin@contractfarming.com` (see deployment docs for password)
 - Sample products (Wheat, Rice, Tomato, Potato, Mango, etc.)
 - Sample market prices
 
@@ -431,7 +431,7 @@ This starts:
 
 **Admin Account:**
 - Email: `admin@contractfarming.com`
-- Password: `admin123`
+- Password: *(Contact system administrator or check deployment configuration)*
 
 **Farmer Account:**
 - Email: `farmer@example.com`

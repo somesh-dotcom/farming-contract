@@ -3,7 +3,7 @@
     {
       "id": "user_admin_001",
       "email": "admin@contractfarming.com",
-      "password": "$2b$10$rH7zKpJvN3qPxQz8YqLbMOqLKxJz5vF9nR8wX2yT1cU6dE4sA3bP.",
+      "password": "$2a$10$QlRxgpS9CqDxyK6Ajt8aR.WD9EqJmpUPSb7wxngUkrnRr/5mxRjSC",
       "name": "Admin User",
       "role": "ADMIN",
       "phone": "+91 9876543210",

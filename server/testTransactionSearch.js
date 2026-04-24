@@ -5,7 +5,7 @@ async function testTransactionSearch() {
     // First login to get token
     const loginRes = await axios.post('http://localhost:5004/api/auth/login', {
       email: 'admin@contractfarming.com',
-      password: 'admin123'
+      password: 'admin@3900'
     });
     
     const token = loginRes.data.token;

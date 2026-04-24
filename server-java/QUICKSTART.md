@@ -64,7 +64,7 @@ java -jar target/agri-trading-1.0.0.jar
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@example.com","password":"admin123"}'
+  -d '{"email":"admin@example.com","password":"<ADMIN_PASSWORD>"}'
 ```
 
 **Register New User:**

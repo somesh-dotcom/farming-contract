@@ -40,7 +40,7 @@ This single file contains:
 The database comes pre-loaded with:
 
 ### Users (3 default accounts)
-1. **Admin**: `admin@contractfarming.com` / password: `password123`
+1. **Admin**: `admin@contractfarming.com` / password: *(see configuration)*
 2. **Farmer**: `farmer@example.com` / password: `password123`
 3. **Buyer**: `buyer@example.com` / password: `password123`
 

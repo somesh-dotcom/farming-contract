@@ -47,7 +47,7 @@ async function testCompletedContractRestriction() {
     // Login as Admin
     const adminLoginRes = await axios.post('http://localhost:5004/api/auth/login', {
       email: 'admin@contractfarming.com',
-      password: 'admin123'
+      password: 'admin@3900'
     });
     
     const adminToken = adminLoginRes.data.token;
