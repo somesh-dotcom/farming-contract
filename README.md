@@ -432,7 +432,7 @@ This starts:
 
 **Admin Account:**
 - Email: `admin@contractfarming.com`
-- Password: `password123`
+- Password: `admin123`
 
 **Farmer Account:**
 - Email: `farmer@example.com`
