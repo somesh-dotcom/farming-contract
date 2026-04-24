@@ -12,6 +12,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "seed": "tsx src/seed.ts",
+    "update-admin-password": "node scripts/updateAdminPassword.js",
     "add-prices": "tsx src/addSamplePrices.ts",
     "add-contracts": "tsx src/addSampleContracts.ts",
     "add-transactions": "tsx src/addSampleTransactions.ts",
