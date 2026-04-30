@@ -31,13 +31,13 @@ const Login = () => {
   return (
     <div className="min-h-screen relative flex items-center justify-center">
       {/* Full Screen Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://media.licdn.com/dms/image/v2/D4D12AQE3m6wc7HWL7Q/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1688803468436?e=1777507200&v=beta&t=bAQV2osQz--MM77bDg71KWTsdURHnA4ZPLVvD5qxE9A"
-          alt="Agricultural farming landscape" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(https://www.theindiaforum.in/sites/default/files/styles/cover_story/public/field/image/2022/06/21/ramkumar-radhakrishnan-wikimedia-1622193304-1622193304.jpeg.webp)'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
       {/* Login Form - Centered Over Image */}
