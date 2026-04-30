@@ -10,10 +10,29 @@ import {
   Calendar,
   Users,
   ShoppingCart,
-  TrendingDown
+  TrendingDown,
+  BarChart3,
+  PieChart,
+  Activity
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Contract } from '../types'
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+  LineChart,
+  Line
+} from 'recharts'
 
 const Dashboard = () => {
   const { user } = useAuth()
@@ -71,6 +90,52 @@ const Dashboard = () => {
     .filter((c) => c.status === 'ACTIVE' || c.status === 'PENDING')
     .sort((a, b) => new Date(a.deliveryDate).getTime() - new Date(b.deliveryDate).getTime())
     .slice(0, 5)
+
+  // Analytics: Contract Status Distribution
+  const contractStatusData = [
+    { name: 'Active', value: activeContracts.length, color: '#10b981' },
+    { name: 'Pending', value: pendingContracts.length, color: '#f59e0b' },
+    { name: 'Completed', value: completedContracts.length, color: '#3b82f6' },
+    { name: 'Cancelled', value: cancelledContracts.length, color: '#ef4444' },
+  ].filter(item => item.value > 0)
+
+  // Analytics: Revenue by Product
+  const revenueByProduct = myContracts.reduce((acc: any[], contract) => {
+    const productName = contract.product?.name || 'Unknown'
+    const existing = acc.find(item => item.name === productName)
+    if (existing) {
+      existing.value += contract.totalValue
+    } else {
+      acc.push({ name: productName, value: contract.totalValue })
+    }
+    return acc
+  }, []).sort((a: any, b: any) => b.value - a.value).slice(0, 6)
+
+  // Analytics: Monthly Contract Trends
+  const monthlyTrends = myContracts.reduce((acc: any[], contract) => {
+    const date = new Date(contract.createdAt)
+    const month = format(date, 'MMM')
+    const existing = acc.find(item => item.month === month)
+    if (existing) {
+      existing.contracts += 1
+      existing.revenue += contract.totalValue
+    } else {
+      acc.push({ month, contracts: 1, revenue: contract.totalValue })
+    }
+    return acc
+  }, []).slice(-6)
+
+  // Analytics: Location Distribution
+  const locationData = myContracts.reduce((acc: any[], contract) => {
+    const location = contract.location || 'Unknown'
+    const existing = acc.find(item => item.name === location)
+    if (existing) {
+      existing.value += 1
+    } else {
+      acc.push({ name: location, value: 1 })
+    }
+    return acc
+  }, []).sort((a: any, b: any) => b.value - a.value).slice(0, 5)
 
   // Calculate revenue trends
 
@@ -137,28 +202,28 @@ const Dashboard = () => {
       ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.welcome')}</h1>
-        <p className="text-gray-600 mt-1">{t('dashboard.overview')} {user?.name}!</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t('dashboard.welcome')}</h1>
+        <p className="text-sm md:text-base text-gray-600 mt-1">{t('dashboard.overview')} {user?.name}!</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon
           return (
-            <div key={index} className="card hover:shadow-md transition-shadow">
+            <div key={index} className="card hover:shadow-lg transition-shadow border-l-4" style={{ borderLeftColor: stat.color.replace('bg-', '').replace('-500', '') }}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-xs md:text-sm text-gray-600 mb-1">{stat.title}</p>
+                  <p className="text-xl md:text-2xl font-bold text-gray-900">{stat.value}</p>
                   {stat.change && (
                     <div className="flex items-center mt-1">
                       {stat.changeType === 'positive' ? (
-                        <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                        <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-green-500 mr-1" />
                       ) : (
-                        <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                        <TrendingDown className="w-3 h-3 md:w-4 md:h-4 text-red-500 mr-1" />
                       )}
                       <span className={`text-xs ${stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}`}>
                         {stat.change}
@@ -166,8 +231,8 @@ const Dashboard = () => {
                     </div>
                   )}
                 </div>
-                <div className={`${stat.color} p-3 rounded-lg`}>
-                  <Icon className="w-6 h-6 text-white" />
+                <div className={`${stat.color} p-2 md:p-3 rounded-lg`}>
+                  <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
               </div>
             </div>
