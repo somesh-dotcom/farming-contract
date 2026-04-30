@@ -29,9 +29,7 @@ import {
   Pie,
   Cell,
   AreaChart,
-  Area,
-  LineChart,
-  Line
+  Area
 } from 'recharts'
 
 const Dashboard = () => {
@@ -241,85 +239,136 @@ const Dashboard = () => {
       </div>
 
       {/* Charts and Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Market Trends */}
-        <div className="card lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        {/* Revenue by Product Chart */}
+        <div className="card">
           <div className="flex items-center gap-2 mb-4">
-            <ShoppingCart className="w-5 h-5 text-primary-600" />
-            <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.marketInsights')}</h2>
+            <BarChart3 className="w-5 h-5 text-primary-600" />
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Revenue by Product</h2>
           </div>
-          {marketPrices.length > 0 ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {marketPrices.slice(0, 4).map((price: any) => (
-                  <div key={price.id} className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm font-medium text-gray-900">{price.product?.name}</p>
-                    <p className="text-lg font-bold text-primary-600">₹{price.price}</p>
-                    <p className="text-xs text-gray-500">{price.unit}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-gray-600">
-                {t('dashboard.latestMarketPrices', { count: marketPrices.length })}
-              </p>
-            </div>
+          {revenueByProduct.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={revenueByProduct}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
+                <Bar dataKey="value" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
           ) : (
-            <p className="text-gray-500 text-center py-4">{t('dashboard.noMarketData')}</p>
+            <p className="text-gray-500 text-center py-8">No revenue data available</p>
           )}
         </div>
 
-        {/* Contract Status Distribution */}
+        {/* Contract Status Pie Chart */}
         <div className="card">
           <div className="flex items-center gap-2 mb-4">
-            <FileText className="w-5 h-5 text-primary-600" />
-            <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.contractStatus')}</h2>
+            <PieChart className="w-5 h-5 text-primary-600" />
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Contract Status</h2>
           </div>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{t('dashboard.active')}</span>
-              <span className="font-medium">{activeContracts.length}</span>
+          {contractStatusData.length > 0 ? (
+            <div className="flex flex-col items-center">
+              <ResponsiveContainer width="100%" height={250}>
+                <RechartsPieChart>
+                  <Pie
+                    data={contractStatusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {contractStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </RechartsPieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap gap-3 mt-4 justify-center">
+                {contractStatusData.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-xs md:text-sm text-gray-700">{item.name}: {item.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-green-500 h-2 rounded-full" 
-                style={{ width: `${stats.totalContracts > 0 ? (activeContracts.length / stats.totalContracts) * 100 : 0}%` }}
-              ></div>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{t('dashboard.pending')}</span>
-              <span className="font-medium">{pendingContracts.length}</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-yellow-500 h-2 rounded-full" 
-                style={{ width: `${stats.totalContracts > 0 ? (pendingContracts.length / stats.totalContracts) * 100 : 0}%` }}
-              ></div>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{t('dashboard.completed')}</span>
-              <span className="font-medium">{completedContracts.length}</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-500 h-2 rounded-full" 
-                style={{ width: `${stats.totalContracts > 0 ? (completedContracts.length / stats.totalContracts) * 100 : 0}%` }}
-              ></div>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{t('dashboard.cancelled')}</span>
-              <span className="font-medium">{cancelledContracts.length}</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-red-500 h-2 rounded-full" 
-                style={{ width: `${stats.totalContracts > 0 ? (cancelledContracts.length / stats.totalContracts) * 100 : 0}%` }}
-              ></div>
-            </div>
-          </div>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No contract data available</p>
+          )}
         </div>
+      </div>
+
+      {/* Monthly Trends & Location Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        {/* Monthly Contract Trends */}
+        <div className="card">
+          <div className="flex items-center gap-2 mb-4">
+            <Activity className="w-5 h-5 text-primary-600" />
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Monthly Trends</h2>
+          </div>
+          {monthlyTrends.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={monthlyTrends}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value: number, name: string) => 
+                  name === 'contracts' ? `${value} contracts` : `₹${value.toLocaleString()}`
+                } />
+                <Area type="monotone" dataKey="contracts" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No trend data available</p>
+          )}
+        </div>
+
+        {/* Location Distribution */}
+        <div className="card">
+          <div className="flex items-center gap-2 mb-4">
+            <ShoppingCart className="w-5 h-5 text-primary-600" />
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Top Locations</h2>
+          </div>
+          {locationData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={locationData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tick={{ fontSize: 12 }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={100} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#8b5cf6" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No location data available</p>
+          )}
+        </div>
+      </div>
+
+      {/* Market Trends */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-4">
+          <TrendingUp className="w-5 h-5 text-primary-600" />
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900">{t('dashboard.marketInsights')}</h2>
+        </div>
+        {marketPrices.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+            {marketPrices.slice(0, 6).map((price: any) => (
+              <div key={price.id} className="p-3 md:p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                <p className="text-xs md:text-sm font-medium text-gray-900 truncate">{price.product?.name}</p>
+                <p className="text-lg md:text-xl font-bold text-primary-600 mt-1">₹{price.price}</p>
+                <p className="text-xs text-gray-500">{price.unit}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center py-4">{t('dashboard.noMarketData')}</p>
+        )}
       </div>
 
       {/* Quick Actions */}
