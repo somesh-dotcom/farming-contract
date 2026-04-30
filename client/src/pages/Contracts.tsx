@@ -50,29 +50,29 @@ const Contracts = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('navigation.contracts')}</h1>
-          <p className="text-gray-600 mt-1">{t('contract.manage')} {t('contract.farming')}</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t('navigation.contracts')}</h1>
+          <p className="text-sm md:text-base text-gray-600 mt-1">{t('contract.manage')} {t('contract.farming')}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           {user?.role === 'BUYER' && (
             <button
               onClick={() => navigate('/contracts/my-requests')}
-              className="btn btn-secondary flex items-center gap-2"
+              className="btn btn-secondary flex items-center gap-2 flex-1 sm:flex-initial justify-center text-sm md:text-base"
             >
-              <FileText className="w-5 h-5" />
-              My Requests
+              <FileText className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">My Requests</span>
             </button>
           )}
           {user?.role === 'FARMER' && (
             <button
               onClick={() => navigate('/contracts/new')}
-              className="btn btn-primary flex items-center gap-2"
+              className="btn btn-primary flex items-center gap-2 flex-1 sm:flex-initial justify-center text-sm md:text-base"
             >
-              <PlusCircle className="w-5 h-5" />
-              {t('contract.createContract')}
+              <PlusCircle className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">{t('contract.createContract')}</span>
             </button>
           )}
         </div>
@@ -80,9 +80,9 @@ const Contracts = () => {
 
       {myContracts.length === 0 ? (
         <div className="card text-center py-12">
-          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('contract.noContractsFound')}</h3>
-          <p className="text-gray-600 mb-4">
+          <Package className="w-12 h-12 md:w-16 md:h-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">{t('contract.noContractsFound')}</h3>
+          <p className="text-sm md:text-base text-gray-600 mb-4">
             {user?.role === 'FARMER'
               ? t('contract.createFirstContract')
               : t('contract.noContractsAvailable')}
@@ -97,22 +97,22 @@ const Contracts = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3 md:gap-4">
           {myContracts.map((contract) => (
             <div key={contract.id} className="card hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-xl font-semibold text-gray-900">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                <div className="flex-1 w-full">
+                  <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3">
+                    <h3 className="text-lg md:text-xl font-semibold text-gray-900">
                       {contract.product?.name}
                     </h3>
                     <span
-                      className="text-xs px-2 py-1 rounded-full font-medium bg-purple-100 text-purple-700 mr-2"
+                      className="text-xs px-2 py-1 rounded-full font-medium bg-purple-100 text-purple-700"
                     >
                       Order ID: {contract.id.substring(0, 8)}
                     </span>
                     <span
-                      className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(
                         contract.status
                       )}`}
                     >
@@ -120,7 +120,7 @@ const Contracts = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4">
                     <div className="flex items-start gap-2">
                       <Package className="w-4 h-4 text-gray-400 mt-1" />
                       <div>
@@ -179,11 +179,11 @@ const Contracts = () => {
                   </div>
                 </div>
 
-                <div className="ml-4 flex gap-2">
+                <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                   {contract.status === 'ACTIVE' && (
                     <button
                       onClick={() => navigate(`/payment/${contract.id}`)}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors flex-1 sm:flex-initial flex items-center justify-center"
                       title="View Payment"
                     >
                       <CreditCard className="w-5 h-5" />
@@ -191,7 +191,7 @@ const Contracts = () => {
                   )}
                   <button
                     onClick={() => navigate(`/contracts/${contract.id}`)}
-                    className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                    className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors flex-1 sm:flex-initial flex items-center justify-center"
                     title="View Details"
                   >
                     <Eye className="w-5 h-5" />

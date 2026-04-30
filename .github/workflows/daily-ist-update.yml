@@ -1,0 +1,68 @@
+name: Daily IST Market Price Update
+
+on:
+  schedule:
+    # Runs at 18:30 UTC = 00:00 IST (Indian Standard Time)
+    # Cron format: minute hour day-of-month month day-of-week
+    - cron: '30 18 * * *'
+  
+  # Allows manual triggering from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to update'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  update-market-prices:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: |
+          cd server
+          npm ci
+
+      - name: Run IST Daily Update
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd server
+          npm run update-ist-daily
+
+      - name: Update Summary
+        if: always()
+        run: |
+          echo "## IST Daily Market Price Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Scheduled Time:** 00:00 IST (18:30 UTC)" >> $GITHUB_STEP_SUMMARY
+          echo "**Run Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Market prices updated successfully to current IST date" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Update failed. Check logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "⚠️ IST Daily Update Failed!"
+          echo "Please check the GitHub Actions logs for details."
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Job: ${{ github.job }}"
+          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

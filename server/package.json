@@ -14,6 +14,7 @@
     "seed": "tsx src/seed.ts",
     "update-admin-password": "node scripts/updateAdminPassword.js",
     "update-prices-today": "node scripts/updatePricesToToday.js",
+    "update-ist-daily": "node scripts/updatePricesToISTDaily.js",
     "add-prices": "tsx src/addSamplePrices.ts",
     "add-contracts": "tsx src/addSampleContracts.ts",
     "add-transactions": "tsx src/addSampleTransactions.ts",

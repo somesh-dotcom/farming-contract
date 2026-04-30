@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 // Only load dotenv in local development, not on Vercel
 let startRealTimePriceUpdates: (() => void) | null = null;
 let startBangaloreAreaDateUpdates: (() => void) | null = null;
+let startISTDailyAutomation: (() => void) | null = null;
 
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   dotenv.config();
@@ -14,6 +15,9 @@ if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   });
   import('./updateBangaloreAreaDates').then((mod) => {
     startBangaloreAreaDateUpdates = mod.startBangaloreAreaDateUpdates;
+  });
+  import('./istDailyAutomation').then((mod) => {
+    startISTDailyAutomation = mod.startISTDailyAutomation;
   });
 }
 
@@ -106,6 +110,11 @@ if (process.env.VERCEL !== '1') {
     // Start Bangalore area date updates (specific to all 20 Bangalore areas)
     if (startBangaloreAreaDateUpdates) {
       startBangaloreAreaDateUpdates();
+    }
+    
+    // Start IST-based daily automation (primary - updates ALL prices at midnight IST)
+    if (startISTDailyAutomation) {
+      startISTDailyAutomation();
     }
   });
 }

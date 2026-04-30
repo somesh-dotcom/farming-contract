@@ -55,7 +55,7 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-y-auto">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -67,13 +67,13 @@ const Register = () => {
       <div className="absolute inset-0 bg-black/40" />
       
       {/* Glass Effect Form Container */}
-      <div className="max-w-2xl w-full rounded-xl shadow-2xl p-8 relative z-10 backdrop-blur-md bg-white/10 border border-white/20">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-            <UserPlus className="w-8 h-8 text-white" />
+      <div className="max-w-2xl w-full rounded-xl shadow-2xl p-6 md:p-8 relative z-10 backdrop-blur-md bg-white/10 border border-white/20 my-8">
+        <div className="text-center mb-6 md:mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-full mb-3 md:mb-4">
+            <UserPlus className="w-7 h-7 md:w-8 md:h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white drop-shadow-lg">{t('auth.registerTitle')}</h1>
-          <p className="text-white/90 mt-2 drop-shadow">{t('auth.registerSubtitle')}</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">{t('auth.registerTitle')}</h1>
+          <p className="text-sm md:text-base text-white/90 mt-2 drop-shadow">{t('auth.registerSubtitle')}</p>
         </div>
 
         {error && (
@@ -83,7 +83,7 @@ const Register = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div>
               <label className="block text-sm font-medium text-white/90 mb-2">
                 {t('auth.name')} *

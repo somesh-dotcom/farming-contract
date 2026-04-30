@@ -29,7 +29,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center">
+    <div className="min-h-screen relative flex items-center justify-center p-4">
       {/* Full Screen Background Image */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
@@ -41,23 +41,23 @@ const Login = () => {
       </div>
 
       {/* Login Form - Centered Over Image */}
-      <div className="relative z-10 w-full max-w-md p-4">
-        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-              <LogIn className="w-8 h-8 text-white" />
+      <div className="relative z-10 w-full max-w-md">
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-6 md:p-8">
+          <div className="text-center mb-6 md:mb-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-full mb-3 md:mb-4">
+              <LogIn className="w-7 h-7 md:w-8 md:h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg">{t('auth.loginTitle')}</h1>
-            <p className="text-white/90 mt-2 drop-shadow">{t('auth.loginSubtitle')}</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">{t('auth.loginTitle')}</h1>
+            <p className="text-sm md:text-base text-white/90 mt-2 drop-shadow">{t('auth.loginSubtitle')}</p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/20 backdrop-blur-sm border border-red-400/30 text-white rounded-lg">
+            <div className="mb-4 p-3 bg-red-500/20 backdrop-blur-sm border border-red-400/30 text-white rounded-lg text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2">
                 {t('auth.email')}

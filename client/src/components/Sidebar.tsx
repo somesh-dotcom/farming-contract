@@ -10,9 +10,14 @@ import {
   Users,
   Send,
   Inbox,
+  X,
 } from 'lucide-react'
 
-const Sidebar = () => {
+interface SidebarProps {
+  onClose?: () => void
+}
+
+const Sidebar = ({ onClose }: SidebarProps) => {
   const { user } = useAuth()
 
   const navItems = [
@@ -36,7 +41,17 @@ const Sidebar = () => {
   ]
 
   return (
-    <aside className="w-64 bg-white shadow-lg border-r border-gray-200">
+    <aside className="w-64 bg-white shadow-lg border-r border-gray-200 h-full overflow-y-auto">
+      {/* Mobile close button */}
+      <div className="lg:hidden flex justify-end p-4">
+        <button 
+          onClick={onClose}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      
       <nav className="p-4">
         <ul className="space-y-2">
           {navItems.map((item) => {
@@ -45,6 +60,7 @@ const Sidebar = () => {
               <li key={item.path}>
                 <NavLink
                   to={item.path}
+                  onClick={() => onClose?.()}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       isActive
