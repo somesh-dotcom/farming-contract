@@ -10,27 +10,10 @@ import {
   Calendar,
   Users,
   ShoppingCart,
-  TrendingDown,
-  BarChart3,
-  PieChart,
-  Activity
+  TrendingDown
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Contract } from '../types'
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area
-} from 'recharts'
 
 const Dashboard = () => {
   const { user } = useAuth()
@@ -88,52 +71,6 @@ const Dashboard = () => {
     .filter((c) => c.status === 'ACTIVE' || c.status === 'PENDING')
     .sort((a, b) => new Date(a.deliveryDate).getTime() - new Date(b.deliveryDate).getTime())
     .slice(0, 5)
-
-  // Analytics: Contract Status Distribution
-  const contractStatusData = [
-    { name: 'Active', value: activeContracts.length, color: '#10b981' },
-    { name: 'Pending', value: pendingContracts.length, color: '#f59e0b' },
-    { name: 'Completed', value: completedContracts.length, color: '#3b82f6' },
-    { name: 'Cancelled', value: cancelledContracts.length, color: '#ef4444' },
-  ].filter(item => item.value > 0)
-
-  // Analytics: Revenue by Product
-  const revenueByProduct = myContracts.reduce((acc: any[], contract) => {
-    const productName = contract.product?.name || 'Unknown'
-    const existing = acc.find(item => item.name === productName)
-    if (existing) {
-      existing.value += contract.totalValue
-    } else {
-      acc.push({ name: productName, value: contract.totalValue })
-    }
-    return acc
-  }, []).sort((a: any, b: any) => b.value - a.value).slice(0, 6)
-
-  // Analytics: Monthly Contract Trends
-  const monthlyTrends = myContracts.reduce((acc: any[], contract) => {
-    const date = new Date(contract.createdAt)
-    const month = format(date, 'MMM')
-    const existing = acc.find(item => item.month === month)
-    if (existing) {
-      existing.contracts += 1
-      existing.revenue += contract.totalValue
-    } else {
-      acc.push({ month, contracts: 1, revenue: contract.totalValue })
-    }
-    return acc
-  }, []).slice(-6)
-
-  // Analytics: Location Distribution
-  const locationData = myContracts.reduce((acc: any[], contract) => {
-    const location = contract.location || 'Unknown'
-    const existing = acc.find(item => item.name === location)
-    if (existing) {
-      existing.value += 1
-    } else {
-      acc.push({ name: location, value: 1 })
-    }
-    return acc
-  }, []).sort((a: any, b: any) => b.value - a.value).slice(0, 5)
 
   // Calculate revenue trends
 
@@ -200,28 +137,28 @@ const Dashboard = () => {
       ]
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t('dashboard.welcome')}</h1>
-        <p className="text-sm md:text-base text-gray-600 mt-1">{t('dashboard.overview')} {user?.name}!</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.welcome')}</h1>
+        <p className="text-gray-600 mt-1">{t('dashboard.overview')} {user?.name}!</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon
           return (
-            <div key={index} className="card hover:shadow-lg transition-shadow border-l-4" style={{ borderLeftColor: stat.color.replace('bg-', '').replace('-500', '') }}>
+            <div key={index} className="card hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">{stat.title}</p>
-                  <p className="text-xl md:text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                   {stat.change && (
                     <div className="flex items-center mt-1">
                       {stat.changeType === 'positive' ? (
-                        <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-green-500 mr-1" />
+                        <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
                       ) : (
-                        <TrendingDown className="w-3 h-3 md:w-4 md:h-4 text-red-500 mr-1" />
+                        <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                       )}
                       <span className={`text-xs ${stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'}`}>
                         {stat.change}
@@ -229,8 +166,8 @@ const Dashboard = () => {
                     </div>
                   )}
                 </div>
-                <div className={`${stat.color} p-2 md:p-3 rounded-lg`}>
-                  <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                <div className={`${stat.color} p-3 rounded-lg`}>
+                  <Icon className="w-6 h-6 text-white" />
                 </div>
               </div>
             </div>
@@ -239,136 +176,85 @@ const Dashboard = () => {
       </div>
 
       {/* Charts and Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        {/* Revenue by Product Chart */}
-        <div className="card">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Market Trends */}
+        <div className="card lg:col-span-2">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-primary-600" />
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Revenue by Product</h2>
+            <ShoppingCart className="w-5 h-5 text-primary-600" />
+            <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.marketInsights')}</h2>
           </div>
-          {revenueByProduct.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={revenueByProduct}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
-                <Bar dataKey="value" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No revenue data available</p>
-          )}
-        </div>
-
-        {/* Contract Status Pie Chart */}
-        <div className="card">
-          <div className="flex items-center gap-2 mb-4">
-            <PieChart className="w-5 h-5 text-primary-600" />
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Contract Status</h2>
-          </div>
-          {contractStatusData.length > 0 ? (
-            <div className="flex flex-col items-center">
-              <ResponsiveContainer width="100%" height={250}>
-                <RechartsPieChart>
-                  <Pie
-                    data={contractStatusData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {contractStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </RechartsPieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-wrap gap-3 mt-4 justify-center">
-                {contractStatusData.map((item, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-xs md:text-sm text-gray-700">{item.name}: {item.value}</span>
+          {marketPrices.length > 0 ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {marketPrices.slice(0, 4).map((price: any) => (
+                  <div key={price.id} className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm font-medium text-gray-900">{price.product?.name}</p>
+                    <p className="text-lg font-bold text-primary-600">₹{price.price}</p>
+                    <p className="text-xs text-gray-500">{price.unit}</p>
                   </div>
                 ))}
               </div>
+              <p className="text-sm text-gray-600">
+                {t('dashboard.latestMarketPrices', { count: marketPrices.length })}
+              </p>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No contract data available</p>
+            <p className="text-gray-500 text-center py-4">{t('dashboard.noMarketData')}</p>
           )}
         </div>
-      </div>
 
-      {/* Monthly Trends & Location Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        {/* Monthly Contract Trends */}
+        {/* Contract Status Distribution */}
         <div className="card">
           <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-primary-600" />
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Monthly Trends</h2>
+            <FileText className="w-5 h-5 text-primary-600" />
+            <h2 className="text-xl font-semibold text-gray-900">{t('dashboard.contractStatus')}</h2>
           </div>
-          {monthlyTrends.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={monthlyTrends}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(value: number, name: string) => 
-                  name === 'contracts' ? `${value} contracts` : `₹${value.toLocaleString()}`
-                } />
-                <Area type="monotone" dataKey="contracts" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-              </AreaChart>
-            </ResponsiveContainer>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No trend data available</p>
-          )}
-        </div>
-
-        {/* Location Distribution */}
-        <div className="card">
-          <div className="flex items-center gap-2 mb-4">
-            <ShoppingCart className="w-5 h-5 text-primary-600" />
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900">Top Locations</h2>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">{t('dashboard.active')}</span>
+              <span className="font-medium">{activeContracts.length}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-green-500 h-2 rounded-full" 
+                style={{ width: `${stats.totalContracts > 0 ? (activeContracts.length / stats.totalContracts) * 100 : 0}%` }}
+              ></div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">{t('dashboard.pending')}</span>
+              <span className="font-medium">{pendingContracts.length}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-yellow-500 h-2 rounded-full" 
+                style={{ width: `${stats.totalContracts > 0 ? (pendingContracts.length / stats.totalContracts) * 100 : 0}%` }}
+              ></div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">{t('dashboard.completed')}</span>
+              <span className="font-medium">{completedContracts.length}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-500 h-2 rounded-full" 
+                style={{ width: `${stats.totalContracts > 0 ? (completedContracts.length / stats.totalContracts) * 100 : 0}%` }}
+              ></div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">{t('dashboard.cancelled')}</span>
+              <span className="font-medium">{cancelledContracts.length}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-red-500 h-2 rounded-full" 
+                style={{ width: `${stats.totalContracts > 0 ? (cancelledContracts.length / stats.totalContracts) * 100 : 0}%` }}
+              ></div>
+            </div>
           </div>
-          {locationData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={locationData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={100} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#8b5cf6" />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No location data available</p>
-          )}
         </div>
-      </div>
-
-      {/* Market Trends */}
-      <div className="card">
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-primary-600" />
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900">{t('dashboard.marketInsights')}</h2>
-        </div>
-        {marketPrices.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
-            {marketPrices.slice(0, 6).map((price: any) => (
-              <div key={price.id} className="p-3 md:p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-                <p className="text-xs md:text-sm font-medium text-gray-900 truncate">{price.product?.name}</p>
-                <p className="text-lg md:text-xl font-bold text-primary-600 mt-1">₹{price.price}</p>
-                <p className="text-xs text-gray-500">{price.unit}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center py-4">{t('dashboard.noMarketData')}</p>
-        )}
       </div>
 
       {/* Quick Actions */}
