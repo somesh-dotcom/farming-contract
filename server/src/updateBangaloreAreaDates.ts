@@ -68,13 +68,10 @@ export const updateBangaloreAreaDates = async () => {
           continue;
         }
         
-        // Create new entry with today's date but SAME price
-        await prisma.marketPrice.create({
+        // Update the existing entry with today's date
+        await prisma.marketPrice.update({
+          where: { id: latestPrice.id },
           data: {
-            productId: product.id,
-            price: latestPrice.price,  // Keep the same price
-            unit: latestPrice.unit,
-            location: location,
             date: now  // Update to current date/time
           }
         });

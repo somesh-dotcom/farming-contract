@@ -110,13 +110,10 @@ async function updatePricesToISTDaily() {
           continue;
         }
         
-        // Create new entry with today's IST date but SAME price
-        await prisma.marketPrice.create({
+        // Update the existing latest price with today's IST date
+        await prisma.marketPrice.update({
+          where: { id: latestPrice.id },
           data: {
-            productId: latestPrice.productId,
-            price: latestPrice.price,
-            unit: latestPrice.unit,
-            location: latestPrice.location,
             date: targetDate
           }
         });
