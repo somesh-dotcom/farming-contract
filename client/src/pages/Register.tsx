@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
-import { UserPlus } from 'lucide-react'
+import { ArrowRight, Sprout } from 'lucide-react'
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -55,192 +55,191 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-y-auto">
-      {/* Background Image */}
+    <div className="min-h-screen relative flex items-center justify-center p-4 md:p-8 overflow-hidden">
+      {/* Full Screen Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-[20000ms] hover:scale-110"
         style={{
-          backgroundImage: 'url(https://chaloindiaworld.com/wp-content/uploads/2022/10/Rain-Places-Cover.jpg)'
+          backgroundImage: 'url(https://www.theindiaforum.in/sites/default/files/styles/cover_story/public/field/image/2022/06/21/ramkumar-radhakrishnan-wikimedia-1622193304-1622193304.jpeg.webp)'
         }}
-      />
-      {/* Overlay to enhance readability */}
-      <div className="absolute inset-0 bg-black/40" />
-      
-      {/* Glass Effect Form Container */}
-      <div className="max-w-2xl w-full rounded-xl shadow-2xl p-6 md:p-8 relative z-10 backdrop-blur-md bg-white/10 border border-white/20 my-8">
-        <div className="text-center mb-6 md:mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-full mb-3 md:mb-4">
-            <UserPlus className="w-7 h-7 md:w-8 md:h-8 text-white" />
+      >
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-[900px] rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-xl bg-white/10 border border-white/20">
+        {/* Register Form (Centered) */}
+        <div className="w-full p-8 md:p-12 flex flex-col justify-center bg-white/5 relative max-h-[90vh] overflow-y-auto scrollbar-hide">
+          
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center gap-3 mb-8">
+            <div className="bg-emerald-500 p-2.5 rounded-xl shadow-lg shadow-emerald-500/30">
+              <Sprout className="w-6 h-6 text-white" />
+            </div>
+            <span className="font-extrabold text-2xl text-white tracking-tight">Contract Farming</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">{t('auth.registerTitle')}</h1>
-          <p className="text-sm md:text-base text-white/90 mt-2 drop-shadow">{t('auth.registerSubtitle')}</p>
+
+          <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3 drop-shadow-lg">{t('auth.registerTitle')}</h1>
+            <p className="text-white/80 font-medium">{t('auth.registerSubtitle')}</p>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-rose-500/20 backdrop-blur-md border border-rose-500/30 text-white rounded-2xl text-sm font-medium flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-rose-500"></div>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  {t('auth.name')} *
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium placeholder-white/40"
+                  required
+                  placeholder="Enter your name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  {t('auth.role')} *
+                </label>
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium appearance-none"
+                  required
+                >
+                  <option value="FARMER" className="bg-gray-900">{t('auth.farmer')}</option>
+                  <option value="BUYER" className="bg-gray-900">{t('auth.buyer')}</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  {t('auth.email')} *
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium placeholder-white/40"
+                  required
+                  placeholder={t('auth.enterEmail')}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  {t('auth.phone')}
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium placeholder-white/40"
+                  placeholder="Enter phone number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  {t('auth.password')} *
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium placeholder-white/40"
+                  required
+                  placeholder={t('auth.enterPassword')}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  {t('auth.confirmPassword')} *
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium placeholder-white/40"
+                  required
+                  placeholder={t('auth.enterConfirmPassword')}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  {t('auth.city')}
+                </label>
+                <select
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium appearance-none"
+                >
+                  <option value="" className="bg-gray-900">{t('auth.selectCity')}</option>
+                  <option value="Bangalore" className="bg-gray-900">Bangalore</option>
+                  <option value="Mysore" className="bg-gray-900">Mysore</option>
+                  <option value="Mangalore" className="bg-gray-900">Mangalore</option>
+                  <optgroup label="Other Cities" className="bg-gray-900">
+                    <option value="Chennai">Chennai</option>
+                    <option value="Hyderabad">Hyderabad</option>
+                    <option value="Pune">Pune</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Mumbai">Mumbai</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white/90 uppercase tracking-wider mb-2 drop-shadow">
+                  Area (optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Koramangala"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium placeholder-white/40"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-emerald-900/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 group mt-6"
+            >
+              <span>{loading ? t('auth.creatingAccount') : t('auth.signUp')}</span>
+              {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center border-t border-white/10 pt-8">
+            <p className="text-white/80 font-medium">
+              {t('auth.alreadyHaveAccount')}{' '}
+              <Link to="/login" className="text-emerald-400 font-bold hover:text-emerald-300 hover:underline transition-colors">
+                {t('auth.signIn')}
+              </Link>
+            </p>
+          </div>
         </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-500/20 backdrop-blur-sm border border-red-400/30 text-white rounded-lg">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                {t('auth.name')} *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                required
-                placeholder="Enter your name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                {t('auth.role')} *
-              </label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                required
-              >
-                <option value="FARMER" className="text-gray-900">{t('auth.farmer')}</option>
-                <option value="BUYER" className="text-gray-900">{t('auth.buyer')}</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                {t('auth.email')} *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                required
-                placeholder={t('auth.enterEmail')}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                {t('auth.phone')}
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                placeholder="Enter phone number"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                {t('auth.password')} *
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                required
-                placeholder={t('auth.enterPassword')}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                {t('auth.confirmPassword')} *
-              </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                required
-                placeholder={t('auth.enterConfirmPassword')}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                {t('auth.city')}
-              </label>
-              <select
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-              >
-                <option value="" className="text-gray-900">{t('auth.selectCity')}</option>
-                <option value="Bangalore" className="text-gray-900">Bangalore</option>
-                <option value="Mysore" className="text-gray-900">Mysore</option>
-                <option value="Mangalore" className="text-gray-900">Mangalore</option>
-                <optgroup label="Other Cities">
-                  <option value="Chennai" className="text-gray-900">Chennai</option>
-                  <option value="Hyderabad" className="text-gray-900">Hyderabad</option>
-                  <option value="Pune" className="text-gray-900">Pune</option>
-                  <option value="Delhi" className="text-gray-900">Delhi</option>
-                  <option value="Mumbai" className="text-gray-900">Mumbai</option>
-                </optgroup>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/90 mb-2">
-                Area (optional)
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Koramangala, Indiranagar, etc."
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">
-              {t('auth.address')}
-            </label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="backdrop-blur-md bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full backdrop-blur-md bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-          >
-            {loading ? t('auth.creatingAccount') : t('auth.signUp')}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-white/90">
-          {t('auth.alreadyHaveAccount')}{' '}
-          <Link to="/login" className="text-white font-semibold hover:underline drop-shadow">
-            {t('auth.signIn')}
-          </Link>
-        </p>
       </div>
     </div>
   )

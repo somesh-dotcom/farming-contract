@@ -10,7 +10,7 @@ import PaymentGateway from '../components/PaymentGateway'
 const PaymentPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  useAuth()
+  const { user } = useAuth()
   const queryClient = useQueryClient()
   const [showPaymentGateway, setShowPaymentGateway] = useState(false)
 
@@ -208,15 +208,21 @@ const PaymentPage = () => {
           </div>
         ) : (
           <div className="text-center">
-            <button
-              onClick={() => setShowPaymentGateway(true)}
-              className="btn btn-primary text-lg px-8 py-3 flex items-center gap-3 mx-auto"
-              disabled={contract.status !== 'ACTIVE'}
-            >
-              <CreditCard className="w-6 h-6" />
-              Pay Now - ₹{remainingAmount.toLocaleString()}
-            </button>
-            {contract.status !== 'ACTIVE' && (
+            {user?.role === 'BUYER' ? (
+              <button
+                onClick={() => setShowPaymentGateway(true)}
+                className="btn btn-primary text-lg px-8 py-3 flex items-center gap-3 mx-auto"
+                disabled={contract.status !== 'ACTIVE'}
+              >
+                <CreditCard className="w-6 h-6" />
+                Pay Now - ₹{remainingAmount.toLocaleString()}
+              </button>
+            ) : user?.role === 'FARMER' ? (
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
+                <p className="text-blue-700 font-medium">Waiting for buyer payment</p>
+              </div>
+            ) : null}
+            {contract.status !== 'ACTIVE' && user?.role === 'BUYER' && (
               <p className="text-sm text-gray-600 mt-3 flex items-center gap-2 justify-center">
                 <AlertCircle className="w-4 h-4" />
                 Payment can only be made for active contracts

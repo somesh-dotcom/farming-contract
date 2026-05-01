@@ -575,7 +575,7 @@ const ContractDetail = () => {
                       <ExternalLink className="w-4 h-4" />
                       View Payment Page
                     </button>
-                    {!contract.isPaid && (
+                    {!contract.isPaid && user?.role === 'BUYER' && (
                       <button
                         onClick={() => setShowPaymentGateway(true)}
                         className="w-full btn btn-primary flex items-center justify-center gap-2 mb-2"
