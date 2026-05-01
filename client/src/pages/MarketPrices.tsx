@@ -89,9 +89,8 @@ const MarketPrices = () => {
 
   const latestPrices = latestPricesData || []
 
-  // Filter to only show Bangalore areas (including general "Bangalore")
+  // Filter to only show explicitly listed Bangalore areas
   const bangaloreAreaPrefixes = bangaloreAreas.map(area => `Bangalore - ${area}`)
-  bangaloreAreaPrefixes.push('Bangalore') // Include general Bangalore location
   
   const filteredPrices = selectedArea 
     ? latestPrices
