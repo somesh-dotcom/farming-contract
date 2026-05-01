@@ -12,7 +12,7 @@ const BANGALORE_AREAS = [
  * Updates market price dates for all Bangalore areas
  * Keeps the same price values, only updates the date to today
  */
-export const updateBangaloreAreaDates = async () => {
+export const updateBangaloreAreaDates = async (force: boolean = false) => {
   try {
     console.log('🔄 Updating Bangalore area market price dates to today...');
     
@@ -45,27 +45,29 @@ export const updateBangaloreAreaDates = async () => {
         // If no price exists for this area, skip
         if (!latestPrice) continue;
         
-        // Check if we already have an entry for today
-        const todayStart = new Date(now);
-        todayStart.setHours(0, 0, 0, 0);
-        const todayEnd = new Date(now);
-        todayEnd.setHours(23, 59, 59, 999);
-        
-        const existingTodayEntry = await prisma.marketPrice.findFirst({
-          where: {
-            productId: product.id,
-            location: location,
-            date: {
-              gte: todayStart,
-              lte: todayEnd
+        // Check if we already have an entry for today (unless forcing update)
+        if (!force) {
+          const todayStart = new Date(now);
+          todayStart.setHours(0, 0, 0, 0);
+          const todayEnd = new Date(now);
+          todayEnd.setHours(23, 59, 59, 999);
+          
+          const existingTodayEntry = await prisma.marketPrice.findFirst({
+            where: {
+              productId: product.id,
+              location: location,
+              date: {
+                gte: todayStart,
+                lte: todayEnd
+              }
             }
+          });
+          
+          // Skip if today's entry already exists
+          if (existingTodayEntry) {
+            console.log(`✓ ${product.name} in ${area} - Already has today's date`);
+            continue;
           }
-        });
-        
-        // Skip if today's entry already exists
-        if (existingTodayEntry) {
-          console.log(`✓ ${product.name} in ${area} - Already has today's date`);
-          continue;
         }
         
         // Update the existing entry with today's date

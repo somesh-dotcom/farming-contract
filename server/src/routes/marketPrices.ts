@@ -69,8 +69,8 @@ router.get('/', async (req, res) => {
 // Trigger daily date update (admin only)
 router.post('/update-dates', authenticate, authorize(UserRole.ADMIN), async (req: AuthRequest, res) => {
   try {
-    console.log('🔄 Manual trigger: Updating Bangalore area dates...');
-    await updateBangaloreAreaDates();
+    console.log('🔄 Manual trigger: Updating Bangalore area dates (forced)...');
+    await updateBangaloreAreaDates(true);
     res.json({ 
       message: 'Daily date update triggered successfully',
       timestamp: new Date().toISOString()
