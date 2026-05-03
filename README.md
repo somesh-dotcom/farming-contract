@@ -870,6 +870,44 @@ npm run install:all
 - Backup `database.json` regularly when using file storage
 - Switch between PostgreSQL and file database by toggling `USE_FILE_DATABASE`
 
+## 🚀 Deployment (Vercel & Neon PostgreSQL)
+
+This project is optimized for deployment on Vercel with a Neon Serverless PostgreSQL database.
+
+### 1. Database Setup (Neon)
+1. Go to [Neon.tech](https://neon.tech) and create a new project.
+2. Get your connection string (e.g., `postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require`).
+3. Add `&connection_limit=1` to the end of the URL to prevent connection limits on serverless environments.
+
+### 2. Backend Deployment (Vercel)
+1. Deploy the `server` directory to Vercel.
+2. In your Vercel project settings, set the following Environment Variables:
+   - `DATABASE_URL`: Your Neon connection string.
+   - `USE_FILE_DATABASE`: `false` (Required for production).
+   - `JWT_SECRET`: A strong random string for authentication.
+   - `JWT_EXPIRES_IN`: `7d`
+   - `NODE_ENV`: `production`
+   - `CLIENT_URL`: URL of your frontend (e.g., `https://client-opal-beta-80.vercel.app`)
+
+### 3. Database Migration
+Run migrations against your production database from your local machine:
+```bash
+cd server
+export DATABASE_URL="your-neon-connection-string"
+npm run prisma:generate
+npm run prisma:migrate
+npm run seed  # Optional: Seed initial admin user and data
+```
+
+### 4. Frontend Deployment (Vercel)
+1. Deploy the `client` directory to Vercel.
+2. Set the Environment Variable in Vercel settings:
+   - `VITE_API_URL`: URL of your deployed backend (e.g., `https://server-theta-lime-34.vercel.app`)
+
+### Current Live Deployment Links
+- **Frontend**: https://client-opal-beta-80.vercel.app
+- **Backend API**: https://server-theta-lime-34.vercel.app
+
 ## 🤝 Contributing
 
 We welcome contributions to enhance the agricultural commodity trading platform!
